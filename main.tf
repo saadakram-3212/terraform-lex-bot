@@ -15,4 +15,6 @@ module "lex_bot" {
   locale_timeouts             = var.locale_timeouts
   tags                        = var.tags
   bot_versions = var.bot_versions
+  bot_intents      = var.bot_intents
+  intent_timeouts  = var.intent_timeouts
 }

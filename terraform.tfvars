@@ -59,19 +59,167 @@ bot_locales = [
   }
 ]
 
-# Locale Operation Timeouts (optional - uses defaults if not specified)
+# Locale Operation Timeouts
 locale_timeouts = {
   create = "30m"
   update = "30m"
   delete = "30m"
 }
 
+# Bot Intents Configuration
+bot_intents = [
+  {
+    name        = "OrderPizza"
+    bot_version = "DRAFT"
+    locale_id   = "en_US"
+    description = "Intent to order a pizza"
+    sample_utterances = [
+      "I want to order a pizza",
+      "Can I get a pizza",
+      "I'd like to order pizza"
+    ]
+    
+    confirmation_setting = {
+      active = true
+      prompt_specification = {
+        max_retries                = 2
+        allow_interrupt            = true
+        message_selection_strategy = "Ordered"
+        message_groups = [
+          {
+            plain_text_message = "Are you sure you want to order this pizza?"
+          }
+        ]
+        # Include default prompt attempts to avoid AWS drift
+        prompt_attempts_specification = [
+          {
+            allow_interrupt = true
+            map_block_key   = "Initial"
+            allowed_input_types = {
+              allow_audio_input = true
+              allow_dtmf_input  = true
+            }
+            audio_and_dtmf_input_specification = {
+              start_timeout_ms = 4000
+              audio_specification = {
+                end_timeout_ms = 640
+                max_length_ms  = 15000
+              }
+              dtmf_specification = {
+                deletion_character = "*"
+                end_character      = "#"
+                end_timeout_ms     = 5000
+                max_length         = 513
+              }
+            }
+            text_input_specification = {
+              start_timeout_ms = 30000
+            }
+          },
+          {
+            allow_interrupt = true
+            map_block_key   = "Retry1"
+            allowed_input_types = {
+              allow_audio_input = true
+              allow_dtmf_input  = true
+            }
+            audio_and_dtmf_input_specification = {
+              start_timeout_ms = 4000
+              audio_specification = {
+                end_timeout_ms = 640
+                max_length_ms  = 15000
+              }
+              dtmf_specification = {
+                deletion_character = "*"
+                end_character      = "#"
+                end_timeout_ms     = 5000
+                max_length         = 513
+              }
+            }
+            text_input_specification = {
+              start_timeout_ms = 30000
+            }
+          }
+        ]
+      }
+      declination_response = {
+        allow_interrupt = false
+        message_groups = [
+          {
+            plain_text_message = "Okay, I've cancelled your pizza order."
+          }
+        ]
+      }
+    }
+    
+    closing_setting = {
+      active = true
+      closing_response = {
+        allow_interrupt = false
+        message_groups = [
+          {
+            plain_text_message = "Thank you for your order! Your pizza will be ready soon."
+          }
+        ]
+      }
+    }
+    
+    fulfillment_code_hook = {
+      enabled = true
+      active  = true
+      post_fulfillment_status_specification = {
+        success_response = {
+          allow_interrupt = false
+          message_groups = [
+            {
+              plain_text_message = "Your order has been placed successfully!"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    name        = "CheckOrderStatus"
+    bot_version = "DRAFT"
+    locale_id   = "en_US"
+    description = "Intent to check order status"
+    sample_utterances = [
+      "Where is my order",
+      "Check my order status",
+      "Track my order"
+    ]
+    
+    dialog_code_hook = {
+      enabled = true
+    }
+    
+    closing_setting = {
+      active = true
+      closing_response = {
+        allow_interrupt = false
+        message_groups = [
+          {
+            plain_text_message = "Is there anything else I can help you with?"
+          }
+        ]
+      }
+    }
+  }
+]
+
+# Intent Operation Timeouts
+intent_timeouts = {
+  create = "30m"
+  update = "30m"
+  delete = "30m"
+}
+
 # Bot Versions Configuration
-# Create versions after locales are configured in DRAFT
 bot_versions = [
   {
     version_name = "v1"
-    description  = "First production version with all three locales"
+    description  = "First production version with all locales and intents"
     locale_specification = {
       "en_US" = {
         source_bot_version = "DRAFT"

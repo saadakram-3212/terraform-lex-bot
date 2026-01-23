@@ -52,3 +52,18 @@ output "lex_bot_version_numbers" {
   description = "Map of version names to version numbers"
   value       = module.lex_bot.bot_version_numbers
 }
+
+output "lex_bot_intents" {
+  description = "Bot intents information"
+  value       = module.lex_bot.bot_intents
+}
+
+output "lex_bot_intent_ids" {
+  description = "Map of intent names to their IDs"
+  value       = module.lex_bot.bot_intent_ids
+}
+
+output "lex_bot_intent_full_ids" {
+  description = "Map of intent names to their full composite IDs"
+  value       = module.lex_bot.bot_intent_full_ids
+}

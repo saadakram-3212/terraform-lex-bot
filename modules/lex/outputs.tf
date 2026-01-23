@@ -57,3 +57,19 @@ output "bot_version_numbers" {
   description = "Map of version names to version numbers"
   value       = { for k, version in aws_lexv2models_bot_version.this : k => version.bot_version }
 }
+
+output "bot_intents" {
+  description = "Map of bot intents"
+  value       = aws_lexv2models_intent.this
+  sensitive   = false
+}
+
+output "bot_intent_ids" {
+  description = "Map of intent names to their IDs"
+  value       = { for k, intent in aws_lexv2models_intent.this : k => intent.intent_id }
+}
+
+output "bot_intent_full_ids" {
+  description = "Map of intent names to their full composite IDs"
+  value       = { for k, intent in aws_lexv2models_intent.this : k => intent.id }
+}

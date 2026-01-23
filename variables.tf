@@ -103,3 +103,113 @@ variable "bot_versions" {
   }))
   default = []
 }
+
+variable "bot_intents" {
+  description = "List of intents to create for the bot"
+  type = list(object({
+    name        = string
+    bot_version = optional(string, "DRAFT")
+    locale_id   = string
+    description = optional(string, "")
+    sample_utterances = optional(list(string), [])
+    parent_intent_signature = optional(string, null)
+    
+    dialog_code_hook = optional(object({
+      enabled = bool
+    }), null)
+    
+    fulfillment_code_hook = optional(object({
+      enabled = bool
+      active  = optional(bool, true)
+      post_fulfillment_status_specification = optional(object({
+        success_response = optional(object({
+          allow_interrupt = optional(bool, false)
+          message_groups = list(object({
+            plain_text_message = string
+          }))
+        }), null)
+      }), null)
+    }), null)
+    
+    confirmation_setting = optional(object({
+      active = optional(bool, true)
+      prompt_specification = object({
+        max_retries                = number
+        allow_interrupt            = optional(bool, false)
+        message_selection_strategy = optional(string, "Ordered")
+        message_groups = list(object({
+          plain_text_message = string
+        }))
+        prompt_attempts_specification = optional(list(object({
+          allow_interrupt = optional(bool, true)
+          map_block_key   = string
+          allowed_input_types = object({
+            allow_audio_input = bool
+            allow_dtmf_input  = bool
+          })
+          audio_and_dtmf_input_specification = optional(object({
+            start_timeout_ms = number
+            audio_specification = object({
+              end_timeout_ms = number
+              max_length_ms  = number
+            })
+            dtmf_specification = object({
+              deletion_character = string
+              end_character      = string
+              end_timeout_ms     = number
+              max_length         = number
+            })
+          }), null)
+          text_input_specification = optional(object({
+            start_timeout_ms = number
+          }), null)
+        })), [])
+      })
+      declination_response = optional(object({
+        allow_interrupt = optional(bool, false)
+        message_groups = list(object({
+          plain_text_message = string
+        }))
+      }), null)
+    }), null)
+    
+    closing_setting = optional(object({
+      active = optional(bool, true)
+      closing_response = optional(object({
+        allow_interrupt = optional(bool, false)
+        message_groups = list(object({
+          plain_text_message = string
+        }))
+      }), null)
+    }), null)
+    
+    input_contexts = optional(list(string), [])
+    
+    output_contexts = optional(list(object({
+      name                    = string
+      time_to_live_in_seconds = number
+      turns_to_live           = number
+    })), [])
+    
+    kendra_configuration = optional(object({
+      kendra_index                = string
+      query_filter_string         = optional(string, null)
+      query_filter_string_enabled = optional(bool, false)
+    }), null)
+  }))
+  default = []
+}
+
+variable "intent_timeouts" {
+  description = "Timeout configuration for intent operations"
+  type = object({
+    create = optional(string, "30m")
+    update = optional(string, "30m")
+    delete = optional(string, "30m")
+  })
+  default = {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+}
