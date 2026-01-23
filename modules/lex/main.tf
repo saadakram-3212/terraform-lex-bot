@@ -20,8 +20,8 @@ resource "aws_iam_role" "lex_bot" {
   tags = merge(
     var.tags,
     {
-      Name       = var.iam_role_name != "" ? var.iam_role_name : "${var.bot_name}-role"
-      ManagedBy  = "Terraform"
+      Name      = var.iam_role_name != "" ? var.iam_role_name : "${var.bot_name}-role"
+      ManagedBy = "Terraform"
     }
   )
 }
@@ -64,5 +64,30 @@ resource "aws_lexv2models_bot" "this" {
       name       = members.value.name
       version    = members.value.version
     }
+  }
+}
+
+# Lex V2 Bot Locales
+resource "aws_lexv2models_bot_locale" "this" {
+  for_each = { for locale in var.bot_locales : locale.locale_id => locale }
+
+  bot_id                           = aws_lexv2models_bot.this.id
+  bot_version                      = each.value.bot_version
+  locale_id                        = each.value.locale_id
+  n_lu_intent_confidence_threshold = each.value.n_lu_intent_confidence_threshold
+  description                      = each.value.description
+
+  dynamic "voice_settings" {
+    for_each = each.value.voice_settings != null ? [each.value.voice_settings] : []
+    content {
+      voice_id = voice_settings.value.voice_id
+      engine   = voice_settings.value.engine
+    }
+  }
+
+  timeouts {
+    create = var.locale_timeouts.create
+    update = var.locale_timeouts.update
+    delete = var.locale_timeouts.delete
   }
 }

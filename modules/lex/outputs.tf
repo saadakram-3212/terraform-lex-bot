@@ -27,3 +27,18 @@ output "iam_role_id" {
   description = "ID of the IAM role created for the Lex bot"
   value       = aws_iam_role.lex_bot.id
 }
+
+output "bot_locales" {
+  description = "Map of bot locale IDs to their full resource objects"
+  value       = aws_lexv2models_bot_locale.this
+}
+
+output "bot_locale_ids" {
+  description = "List of bot locale IDs"
+  value       = [for locale in aws_lexv2models_bot_locale.this : locale.id]
+}
+
+output "bot_locale_names" {
+  description = "Map of locale IDs to their names"
+  value       = { for k, locale in aws_lexv2models_bot_locale.this : k => locale.name }
+}

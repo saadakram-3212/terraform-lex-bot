@@ -22,3 +22,18 @@ output "lex_bot_iam_role_name" {
   description = "Name of the IAM role for the Lex bot"
   value       = module.lex_bot.iam_role_name
 }
+
+output "lex_bot_locales" {
+  description = "Bot locales information"
+  value       = module.lex_bot.bot_locales
+}
+
+output "lex_bot_locale_ids" {
+  description = "List of bot locale IDs"
+  value       = module.lex_bot.bot_locale_ids
+}
+
+output "lex_bot_locale_names" {
+  description = "Map of locale IDs to their names"
+  value       = module.lex_bot.bot_locale_names
+}

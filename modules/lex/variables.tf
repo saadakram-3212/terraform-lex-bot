@@ -66,6 +66,51 @@ variable "bot_members" {
   default = []
 }
 
+variable "bot_locales" {
+  description = "List of bot locales to configure"
+  type = list(object({
+    locale_id                        = string
+    bot_version                      = optional(string, "DRAFT")
+    n_lu_intent_confidence_threshold = number
+    description                      = optional(string, "")
+    voice_settings = optional(object({
+      voice_id = string
+      engine   = optional(string, "standard")
+    }), null)
+  }))
+  default = []
+
+  validation {
+    condition = alltrue([
+      for locale in var.bot_locales :
+      locale.n_lu_intent_confidence_threshold >= 0 && locale.n_lu_intent_confidence_threshold <= 1
+    ])
+    error_message = "n_lu_intent_confidence_threshold must be between 0 and 1."
+  }
+
+  validation {
+    condition = alltrue([
+      for locale in var.bot_locales :
+      locale.voice_settings == null || contains(["standard", "neural"], locale.voice_settings.engine)
+    ])
+    error_message = "Voice engine must be either 'standard' or 'neural'."
+  }
+}
+
+variable "locale_timeouts" {
+  description = "Timeout configuration for bot locale operations"
+  type = object({
+    create = optional(string, "30m")
+    update = optional(string, "30m")
+    delete = optional(string, "30m")
+  })
+  default = {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+}
+
 variable "tags" {
   description = "A map of tags to add to all resources"
   type        = map(string)

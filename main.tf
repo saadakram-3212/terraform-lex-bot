@@ -1,9 +1,7 @@
 
-
-
 # Call the Lex Bot module
 module "lex_bot" {
-  source = "./modules/lex"
+  source = "./modules/lex-bot"
 
   bot_name                    = var.bot_name
   bot_description             = var.bot_description
@@ -13,5 +11,7 @@ module "lex_bot" {
   iam_role_name               = var.iam_role_name
   iam_policy_arns             = var.iam_policy_arns
   bot_members                 = var.bot_members
+  bot_locales                 = var.bot_locales
+  locale_timeouts             = var.locale_timeouts
   tags                        = var.tags
 }

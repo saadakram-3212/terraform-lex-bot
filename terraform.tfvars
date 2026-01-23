@@ -25,6 +25,47 @@ iam_policy_arns = [
 # Optional: Bot members (for BotNetwork type)
 bot_members = []
 
+# Bot Locales Configuration
+bot_locales = [
+  {
+    locale_id                        = "en_US"
+    bot_version                      = "DRAFT"
+    n_lu_intent_confidence_threshold = 0.70
+    description                      = "English (US) locale for customer service bot"
+    voice_settings = {
+      voice_id = "Joanna"
+      engine   = "neural"
+    }
+  },
+  {
+    locale_id                        = "es_US"
+    bot_version                      = "DRAFT"
+    n_lu_intent_confidence_threshold = 0.70
+    description                      = "Spanish (US) locale for customer service bot"
+    voice_settings = {
+      voice_id = "Lupe"
+      engine   = "neural"
+    }
+  },
+  {
+    locale_id                        = "fr_FR"
+    bot_version                      = "DRAFT"
+    n_lu_intent_confidence_threshold = 0.65
+    description                      = "French (France) locale for customer service bot"
+    voice_settings = {
+      voice_id = "Lea"
+      engine   = "standard"
+    }
+  }
+]
+
+# Locale Operation Timeouts (optional - uses defaults if not specified)
+locale_timeouts = {
+  create = "30m"
+  update = "30m"
+  delete = "30m"
+}
+
 # Tags
 tags = {
   Environment = "production"
