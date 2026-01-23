@@ -37,3 +37,18 @@ output "lex_bot_locale_names" {
   description = "Map of locale IDs to their names"
   value       = module.lex_bot.bot_locale_names
 }
+
+output "lex_bot_versions" {
+  description = "Bot versions information"
+  value       = module.lex_bot.bot_versions
+}
+
+output "lex_bot_version_ids" {
+  description = "List of bot version IDs"
+  value       = module.lex_bot.bot_version_ids
+}
+
+output "lex_bot_version_numbers" {
+  description = "Map of version names to version numbers"
+  value       = module.lex_bot.bot_version_numbers
+}

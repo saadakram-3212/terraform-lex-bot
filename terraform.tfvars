@@ -66,6 +66,26 @@ locale_timeouts = {
   delete = "30m"
 }
 
+# Bot Versions Configuration
+# Create versions after locales are configured in DRAFT
+bot_versions = [
+  {
+    version_name = "v1"
+    description  = "First production version with all three locales"
+    locale_specification = {
+      "en_US" = {
+        source_bot_version = "DRAFT"
+      },
+      "es_US" = {
+        source_bot_version = "DRAFT"
+      },
+      "fr_FR" = {
+        source_bot_version = "DRAFT"
+      }
+    }
+  }
+]
+
 # Tags
 tags = {
   Environment = "production"

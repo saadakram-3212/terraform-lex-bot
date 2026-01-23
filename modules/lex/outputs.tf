@@ -42,3 +42,18 @@ output "bot_locale_names" {
   description = "Map of locale IDs to their names"
   value       = { for k, locale in aws_lexv2models_bot_locale.this : k => locale.name }
 }
+
+output "bot_versions" {
+  description = "Map of bot versions"
+  value       = aws_lexv2models_bot_version.this
+}
+
+output "bot_version_ids" {
+  description = "List of bot version IDs"
+  value       = [for version in aws_lexv2models_bot_version.this : version.id]
+}
+
+output "bot_version_numbers" {
+  description = "Map of version names to version numbers"
+  value       = { for k, version in aws_lexv2models_bot_version.this : k => version.bot_version }
+}

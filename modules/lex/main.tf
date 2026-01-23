@@ -91,3 +91,21 @@ resource "aws_lexv2models_bot_locale" "this" {
     delete = var.locale_timeouts.delete
   }
 }
+
+
+# Lex V2 Bot Version
+resource "aws_lexv2models_bot_version" "this" {
+  for_each = { for version in var.bot_versions : version.version_name => version }
+
+  bot_id      = aws_lexv2models_bot.this.id
+  description = each.value.description
+
+  locale_specification = {
+    for locale_id, locale_config in each.value.locale_specification :
+    locale_id => {
+      source_bot_version = locale_config.source_bot_version
+    }
+  }
+
+  depends_on = [aws_lexv2models_bot_locale.this]
+}

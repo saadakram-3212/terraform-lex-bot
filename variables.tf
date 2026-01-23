@@ -91,3 +91,15 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "bot_versions" {
+  description = "List of bot versions to create"
+  type = list(object({
+    version_name = string
+    description  = optional(string, "")
+    locale_specification = map(object({
+      source_bot_version = string
+    }))
+  }))
+  default = []
+}
