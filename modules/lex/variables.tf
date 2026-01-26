@@ -1,61 +1,51 @@
 variable "bot_name" {
-  description = "Name of the Lex bot"
   type        = string
-
-  validation {
-    condition     = length(var.bot_name) > 0 && length(var.bot_name) <= 100
-    error_message = "Bot name must be between 1 and 100 characters."
-  }
+  description = "Name of the Lex bot"
 }
 
 variable "bot_description" {
-  description = "Description of the Lex bot"
   type        = string
+  description = "Description of the Lex bot"
   default     = ""
 }
 
 variable "child_directed" {
-  description = "Whether the bot is directed at children under 13"
   type        = bool
+  description = "Whether the bot is directed at children"
   default     = false
 }
 
 variable "idle_session_ttl_in_seconds" {
-  description = "The maximum time in seconds that Amazon Lex retains the data gathered in a conversation"
   type        = number
+  description = "Time in seconds that the bot should keep the session active"
   default     = 300
-
-  validation {
-    condition     = var.idle_session_ttl_in_seconds >= 60 && var.idle_session_ttl_in_seconds <= 86400
-    error_message = "Idle session TTL must be between 60 and 86400 seconds."
-  }
 }
 
 variable "bot_type" {
-  description = "Type of the bot (Bot or BotNetwork)"
   type        = string
+  description = "Type of the bot"
   default     = "Bot"
-
-  validation {
-    condition     = contains(["Bot", "BotNetwork"], var.bot_type)
-    error_message = "Bot type must be either 'Bot' or 'BotNetwork'."
-  }
 }
 
 variable "iam_role_name" {
-  description = "Name for the IAM role. If empty, will use bot_name-role"
   type        = string
+  description = "Custom IAM role name for the Lex bot"
   default     = ""
 }
 
 variable "iam_policy_arns" {
-  description = "List of IAM policy ARNs to attach to the Lex bot role"
   type        = list(string)
+  description = "List of IAM policy ARNs to attach to the Lex bot role"
   default     = []
 }
 
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to all resources"
+  default     = {}
+}
+
 variable "bot_members" {
-  description = "List of bot members for BotNetwork type"
   type = list(object({
     alias_id   = string
     alias_name = string
@@ -63,110 +53,61 @@ variable "bot_members" {
     name       = string
     version    = string
   }))
-  default = []
+  description = "List of bot members for collaboration"
+  default     = []
 }
 
 variable "bot_locales" {
-  description = "List of bot locales to configure"
   type = list(object({
     locale_id                        = string
-    bot_version                      = optional(string, "DRAFT")
+    bot_version                      = string
     n_lu_intent_confidence_threshold = number
-    description                      = optional(string, "")
+    description                      = optional(string)
     voice_settings = optional(object({
       voice_id = string
-      engine   = optional(string, "standard")
-    }), null)
-  }))
-  default = []
-
-  validation {
-    condition = alltrue([
-      for locale in var.bot_locales :
-      locale.n_lu_intent_confidence_threshold >= 0 && locale.n_lu_intent_confidence_threshold <= 1
-    ])
-    error_message = "n_lu_intent_confidence_threshold must be between 0 and 1."
-  }
-
-  validation {
-    condition = alltrue([
-      for locale in var.bot_locales :
-      locale.voice_settings == null || contains(["standard", "neural"], locale.voice_settings.engine)
-    ])
-    error_message = "Voice engine must be either 'standard' or 'neural'."
-  }
-}
-
-variable "locale_timeouts" {
-  description = "Timeout configuration for bot locale operations"
-  type = object({
-    create = optional(string, "30m")
-    update = optional(string, "30m")
-    delete = optional(string, "30m")
-  })
-  default = {
-    create = "30m"
-    update = "30m"
-    delete = "30m"
-  }
-}
-
-variable "tags" {
-  description = "A map of tags to add to all resources"
-  type        = map(string)
-  default     = {}
-}
-
-variable "bot_versions" {
-  description = "List of bot versions to create"
-  type = list(object({
-    version_name = string
-    description  = optional(string, "")
-    locale_specification = map(object({
-      source_bot_version = string
+      engine   = string
     }))
   }))
-  default = []
+  description = "List of bot locales"
+  default     = []
 }
 
 variable "bot_intents" {
-  description = "List of intents to create for the bot"
   type = list(object({
     name        = string
-    bot_version = optional(string, "DRAFT")
+    bot_version = string
     locale_id   = string
-    description = optional(string, "")
-    sample_utterances = optional(list(string), [])
-    parent_intent_signature = optional(string, null)
+    description = optional(string)
+    sample_utterances = list(string)
     
     dialog_code_hook = optional(object({
       enabled = bool
-    }), null)
+    }))
     
     fulfillment_code_hook = optional(object({
       enabled = bool
-      active  = optional(bool, true)
+      active  = bool
       post_fulfillment_status_specification = optional(object({
         success_response = optional(object({
-          allow_interrupt = optional(bool, false)
+          allow_interrupt = bool
           message_groups = list(object({
             plain_text_message = string
           }))
-        }), null)
-      }), null)
-    }), null)
+        }))
+      }))
+    }))
     
     confirmation_setting = optional(object({
-      active = optional(bool, true)
+      active = bool
       prompt_specification = object({
         max_retries                = number
-        allow_interrupt            = optional(bool, false)
-        message_selection_strategy = optional(string, "Ordered")
+        allow_interrupt            = bool
+        message_selection_strategy = string
         message_groups = list(object({
           plain_text_message = string
         }))
         prompt_attempts_specification = optional(list(object({
-          allow_interrupt = optional(bool, true)
+          allow_interrupt = bool
           map_block_key   = string
           allowed_input_types = object({
             allow_audio_input = bool
@@ -184,57 +125,285 @@ variable "bot_intents" {
               end_timeout_ms     = number
               max_length         = number
             })
-          }), null)
+          }))
           text_input_specification = optional(object({
             start_timeout_ms = number
-          }), null)
-        })), [])
+          }))
+        })))
       })
       declination_response = optional(object({
-        allow_interrupt = optional(bool, false)
+        allow_interrupt = bool
         message_groups = list(object({
           plain_text_message = string
         }))
-      }), null)
-    }), null)
+      }))
+    }))
     
     closing_setting = optional(object({
-      active = optional(bool, true)
+      active = bool
       closing_response = optional(object({
-        allow_interrupt = optional(bool, false)
+        allow_interrupt = bool
         message_groups = list(object({
           plain_text_message = string
         }))
-      }), null)
-    }), null)
+      }))
+    }))
     
     input_contexts = optional(list(string), [])
     
     output_contexts = optional(list(object({
-      name                    = string
+      name                   = string
       time_to_live_in_seconds = number
-      turns_to_live           = number
+      turns_to_live          = number
     })), [])
     
     kendra_configuration = optional(object({
-      kendra_index                = string
-      query_filter_string         = optional(string, null)
-      query_filter_string_enabled = optional(bool, false)
-    }), null)
+      kendra_index                 = string
+      query_filter_string          = optional(string)
+      query_filter_string_enabled  = optional(bool)
+    }))
+    
+    parent_intent_signature = optional(string)
+  }))
+  description = "List of bot intents"
+  default     = []
+}
+
+variable "bot_slots" {
+  type = list(object({
+    name                = string
+    intent_name         = string
+    locale_id          = string
+    bot_version        = string
+    description        = optional(string)
+    slot_type_id       = optional(string)
+    
+    # Multiple values setting
+    allow_multiple_values = optional(bool, false)
+    
+    # Obfuscation setting
+    obfuscation_setting = optional(object({
+      obfuscation_setting_type = string
+    }))
+    
+    # Value elicitation setting (Required)
+    value_elicitation_setting = object({
+      slot_constraint = string # Required or Optional
+      
+      default_value_specification = optional(object({
+        default_value_list = list(object({
+          default_value = string
+        }))
+      }))
+      
+      prompt_specification = optional(object({
+        allow_interrupt            = bool
+        max_retries                = number
+        message_selection_strategy = string
+        
+        message_groups = list(object({
+          plain_text_message = string
+        }))
+        
+        prompt_attempts_specification = optional(list(object({
+          allow_interrupt = bool
+          map_block_key   = string
+          
+          allowed_input_types = object({
+            allow_audio_input = bool
+            allow_dtmf_input  = bool
+          })
+          
+          audio_and_dtmf_input_specification = optional(object({
+            start_timeout_ms = number
+            
+            audio_specification = object({
+              end_timeout_ms = number
+              max_length_ms  = number
+            })
+            
+            dtmf_specification = object({
+              deletion_character = string
+              end_character      = string
+              end_timeout_ms     = number
+              max_length         = number
+            })
+          }))
+          
+          text_input_specification = optional(object({
+            start_timeout_ms = number
+          }))
+        })))
+      }))
+      
+      sample_utterances = optional(list(object({
+        utterance = string
+      })))
+      
+      slot_resolution_setting = optional(object({
+        slot_resolution_strategy = string
+      }))
+      
+      wait_and_continue_specification = optional(object({
+        active = optional(bool, true)
+        
+        continue_response = object({
+          allow_interrupt = optional(bool)
+          message_groups = list(object({
+            plain_text_message = string
+          }))
+        })
+        
+        waiting_response = object({
+          allow_interrupt = optional(bool)
+          message_groups = list(object({
+            plain_text_message = string
+          }))
+        })
+        
+        still_waiting_response = optional(object({
+          frequency_in_seconds = number
+          timeout_in_seconds   = number
+          allow_interrupt      = optional(bool)
+          message_groups = list(object({
+            plain_text_message = string
+          }))
+        }))
+      }))
+    })
+    
+    # Sub-slot setting
+    sub_slot_setting = optional(object({
+      expression = optional(string)
+      
+      slot_specification = optional(map(object({
+        slot_type_id = string
+        
+        value_elicitation_setting = object({
+          slot_constraint = string
+          
+          default_value_specification = optional(object({
+            default_value_list = list(object({
+              default_value = string
+            }))
+          }))
+          
+          prompt_specification = optional(object({
+            allow_interrupt            = bool
+            max_retries                = number
+            message_selection_strategy = string
+            
+            message_groups = list(object({
+              plain_text_message = string
+            }))
+            
+            prompt_attempts_specification = optional(list(object({
+              allow_interrupt = bool
+              map_block_key   = string
+              
+              allowed_input_types = object({
+                allow_audio_input = bool
+                allow_dtmf_input  = bool
+              })
+              
+              audio_and_dtmf_input_specification = optional(object({
+                start_timeout_ms = number
+                
+                audio_specification = object({
+                  end_timeout_ms = number
+                  max_length_ms  = number
+                })
+                
+                dtmf_specification = object({
+                  deletion_character = string
+                  end_character      = string
+                  end_timeout_ms     = number
+                  max_length         = number
+                })
+              }))
+              
+              text_input_specification = optional(object({
+                start_timeout_ms = number
+              }))
+            })))
+          }))
+          
+          sample_utterances = optional(list(object({
+            utterance = string
+          })))
+          
+          slot_resolution_setting = optional(object({
+            slot_resolution_strategy = string
+          }))
+          
+          wait_and_continue_specification = optional(object({
+            active = optional(bool, true)
+            
+            continue_response = object({
+              allow_interrupt = optional(bool)
+              message_groups = list(object({
+                plain_text_message = string
+              }))
+            })
+            
+            waiting_response = object({
+              allow_interrupt = optional(bool)
+              message_groups = list(object({
+                plain_text_message = string
+              }))
+            })
+            
+            still_waiting_response = optional(object({
+              frequency_in_seconds = number
+              timeout_in_seconds   = number
+              allow_interrupt      = optional(bool)
+              message_groups = list(object({
+                plain_text_message = string
+              }))
+            }))
+          }))
+        })
+      })))
+    }))
   }))
   default = []
 }
 
-variable "intent_timeouts" {
-  description = "Timeout configuration for intent operations"
+variable "bot_versions" {
+  type = list(object({
+    version_name = string
+    description  = optional(string)
+    locale_specification = map(object({
+      source_bot_version = string
+    }))
+  }))
+  description = "List of bot versions"
+  default     = []
+}
+
+variable "locale_timeouts" {
   type = object({
-    create = optional(string, "30m")
-    update = optional(string, "30m")
-    delete = optional(string, "30m")
+    create = optional(string, "5m")
+    update = optional(string, "5m")
+    delete = optional(string, "5m")
   })
-  default = {
-    create = "30m"
-    update = "30m"
-    delete = "30m"
-  }
+  default = {}
+}
+
+variable "intent_timeouts" {
+  type = object({
+    create = optional(string, "5m")
+    update = optional(string, "5m")
+    delete = optional(string, "5m")
+  })
+  default = {}
+}
+
+variable "slot_timeouts" {
+  type = object({
+    create = optional(string, "5m")
+    update = optional(string, "5m")
+    delete = optional(string, "5m")
+  })
+  default = {}
 }

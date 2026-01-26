@@ -213,3 +213,242 @@ variable "intent_timeouts" {
     delete = "30m"
   }
 }
+
+variable "bot_slots" {
+  description = "List of slots to create for bot intents"
+  type = list(object({
+    name                = string
+    intent_name         = string
+    locale_id          = string
+    bot_version        = optional(string, "DRAFT")
+    description        = optional(string, "")
+    slot_type_id       = optional(string, null)
+    
+    # Multiple values setting
+    allow_multiple_values = optional(bool, false)
+    
+    # Obfuscation setting
+    obfuscation_setting = optional(object({
+      obfuscation_setting_type = optional(string, "DefaultObfuscation")
+    }), null)
+    
+    # Value elicitation setting (Required)
+    value_elicitation_setting = object({
+      slot_constraint = string # Required or Optional
+      
+      default_value_specification = optional(object({
+        default_value_list = optional(list(object({
+          default_value = string
+        })), [])
+      }), null)
+      
+      prompt_specification = optional(object({
+        allow_interrupt            = optional(bool, true)
+        max_retries                = optional(number, 3)
+        message_selection_strategy = optional(string, "Random")
+        
+        message_groups = optional(list(object({
+          plain_text_message = string
+        })), [])
+        
+        prompt_attempts_specification = optional(list(object({
+          allow_interrupt = optional(bool, true)
+          map_block_key   = string
+          
+          allowed_input_types = optional(object({
+            allow_audio_input = optional(bool, true)
+            allow_dtmf_input  = optional(bool, false)
+          }), {
+            allow_audio_input = true
+            allow_dtmf_input  = false
+          })
+          
+          audio_and_dtmf_input_specification = optional(object({
+            start_timeout_ms = optional(number, 4000)
+            
+            audio_specification = optional(object({
+              end_timeout_ms = optional(number, 640)
+              max_length_ms  = optional(number, 15000)
+            }), {
+              end_timeout_ms = 640
+              max_length_ms  = 15000
+            })
+            
+            dtmf_specification = optional(object({
+              deletion_character = optional(string, "*")
+              end_character      = optional(string, "#")
+              end_timeout_ms     = optional(number, 5000)
+              max_length         = optional(number, 513)
+            }), {
+              deletion_character = "*"
+              end_character      = "#"
+              end_timeout_ms     = 5000
+              max_length         = 513
+            })
+          }), null)
+          
+          text_input_specification = optional(object({
+            start_timeout_ms = optional(number, 30000)
+          }), null)
+        })), [])
+      }), null)
+      
+      sample_utterances = optional(list(object({
+        utterance = string
+      })), [])
+      
+      slot_resolution_setting = optional(object({
+        slot_resolution_strategy = optional(string, "Default")
+      }), null)
+      
+      wait_and_continue_specification = optional(object({
+        active = optional(bool, true)
+        
+        continue_response = optional(object({
+          allow_interrupt = optional(bool, false)
+          message_groups = optional(list(object({
+            plain_text_message = string
+          })), [])
+        }), null)
+        
+        waiting_response = optional(object({
+          allow_interrupt = optional(bool, false)
+          message_groups = optional(list(object({
+            plain_text_message = string
+          })), [])
+        }), null)
+        
+        still_waiting_response = optional(object({
+          frequency_in_seconds = number
+          timeout_in_seconds   = number
+          allow_interrupt      = optional(bool, false)
+          message_groups = optional(list(object({
+            plain_text_message = string
+          })), [])
+        }), null)
+      }), null)
+    })
+    
+    # Sub-slot setting
+    sub_slot_setting = optional(object({
+      expression = optional(string, null)
+      
+      slot_specification = optional(map(object({
+        slot_type_id = string
+        
+        value_elicitation_setting = optional(object({
+          slot_constraint = optional(string, "Required")
+          
+          default_value_specification = optional(object({
+            default_value_list = optional(list(object({
+              default_value = string
+            })), [])
+          }), null)
+          
+          prompt_specification = optional(object({
+            allow_interrupt            = optional(bool, true)
+            max_retries                = optional(number, 3)
+            message_selection_strategy = optional(string, "Random")
+            
+            message_groups = optional(list(object({
+              plain_text_message = string
+            })), [])
+            
+            prompt_attempts_specification = optional(list(object({
+              allow_interrupt = optional(bool, true)
+              map_block_key   = string
+              
+              allowed_input_types = optional(object({
+                allow_audio_input = optional(bool, true)
+                allow_dtmf_input  = optional(bool, false)
+              }), {
+                allow_audio_input = true
+                allow_dtmf_input  = false
+              })
+              
+              audio_and_dtmf_input_specification = optional(object({
+                start_timeout_ms = optional(number, 4000)
+                
+                audio_specification = optional(object({
+                  end_timeout_ms = optional(number, 640)
+                  max_length_ms  = optional(number, 15000)
+                }), {
+                  end_timeout_ms = 640
+                  max_length_ms  = 15000
+                })
+                
+                dtmf_specification = optional(object({
+                  deletion_character = optional(string, "*")
+                  end_character      = optional(string, "#")
+                  end_timeout_ms     = optional(number, 5000)
+                  max_length         = optional(number, 513)
+                }), {
+                  deletion_character = "*"
+                  end_character      = "#"
+                  end_timeout_ms     = 5000
+                  max_length         = 513
+                })
+              }), null)
+              
+              text_input_specification = optional(object({
+                start_timeout_ms = optional(number, 30000)
+              }), null)
+            })), [])
+          }), null)
+          
+          sample_utterances = optional(list(object({
+            utterance = string
+          })), [])
+          
+          slot_resolution_setting = optional(object({
+            slot_resolution_strategy = optional(string, "Default")
+          }), null)
+          
+          wait_and_continue_specification = optional(object({
+            active = optional(bool, true)
+            
+            continue_response = optional(object({
+              allow_interrupt = optional(bool, false)
+              message_groups = optional(list(object({
+                plain_text_message = string
+              })), [])
+            }), null)
+            
+            waiting_response = optional(object({
+              allow_interrupt = optional(bool, false)
+              message_groups = optional(list(object({
+                plain_text_message = string
+              })), [])
+            }), null)
+            
+            still_waiting_response = optional(object({
+              frequency_in_seconds = number
+              timeout_in_seconds   = number
+              allow_interrupt      = optional(bool, false)
+              message_groups = optional(list(object({
+                plain_text_message = string
+              })), [])
+            }), null)
+          }), null)
+        }), {
+          slot_constraint = "Required"
+        })
+      })), {})
+    }), null)
+  }))
+  default = []
+}
+
+variable "slot_timeouts" {
+  description = "Timeout configuration for slot operations"
+  type = object({
+    create = optional(string, "30m")
+    update = optional(string, "30m")
+    delete = optional(string, "30m")
+  })
+  default = {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+}

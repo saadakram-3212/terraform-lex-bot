@@ -1,4 +1,3 @@
-
 # Call the Lex Bot module
 module "lex_bot" {
   source = "./modules/lex"
@@ -14,7 +13,9 @@ module "lex_bot" {
   bot_locales                 = var.bot_locales
   locale_timeouts             = var.locale_timeouts
   tags                        = var.tags
-  bot_versions = var.bot_versions
-  bot_intents      = var.bot_intents
-  intent_timeouts  = var.intent_timeouts
+  bot_versions                = var.bot_versions
+  bot_intents                 = var.bot_intents
+  intent_timeouts             = var.intent_timeouts
+  bot_slots                   = var.bot_slots
+  slot_timeouts               = var.slot_timeouts
 }

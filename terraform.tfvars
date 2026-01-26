@@ -208,6 +208,292 @@ bot_intents = [
   }
 ]
 
+# Bot Slots Configuration
+bot_slots = [
+  {
+    name         = "PizzaSize"
+    intent_name  = "OrderPizza"
+    locale_id    = "en_US"
+    bot_version  = "DRAFT"
+    description  = "Slot for pizza size selection"
+    slot_type_id = "AMAZON.AlphaNumeric"
+    
+    allow_multiple_values = false
+    
+    obfuscation_setting = {
+      obfuscation_setting_type = "DefaultObfuscation"
+    }
+    
+    value_elicitation_setting = {
+      slot_constraint = "Required"
+      
+      default_value_specification = {
+        default_value_list = [
+          {
+            default_value = "medium"
+          }
+        ]
+      }
+      
+      prompt_specification = {
+        allow_interrupt            = true
+        max_retries                = 2
+        message_selection_strategy = "Random"
+        
+        message_groups = [
+          {
+            plain_text_message = "What size pizza would you like? We have small, medium, and large."
+          },
+          {
+            plain_text_message = "Please choose a pizza size: small, medium, or large."
+          }
+        ]
+        
+        prompt_attempts_specification = [
+          {
+            allow_interrupt = true
+            map_block_key   = "Initial"
+            allowed_input_types = {
+              allow_audio_input = true
+              allow_dtmf_input  = false
+            }
+            audio_and_dtmf_input_specification = {
+              start_timeout_ms = 4000
+              audio_specification = {
+                end_timeout_ms = 640
+                max_length_ms  = 15000
+              }
+              dtmf_specification = {
+                deletion_character = "*"
+                end_character      = "#"
+                end_timeout_ms     = 5000
+                max_length         = 513
+              }
+            }
+            text_input_specification = {
+              start_timeout_ms = 30000
+            }
+          },
+          {
+            allow_interrupt = true
+            map_block_key   = "Retry1"
+            allowed_input_types = {
+              allow_audio_input = true
+              allow_dtmf_input  = false
+            }
+            audio_and_dtmf_input_specification = {
+              start_timeout_ms = 4000
+              audio_specification = {
+                end_timeout_ms = 640
+                max_length_ms  = 15000
+              }
+              dtmf_specification = {
+                deletion_character = "*"
+                end_character      = "#"
+                end_timeout_ms     = 5000
+                max_length         = 513
+              }
+            }
+            text_input_specification = {
+              start_timeout_ms = 30000
+            }
+          }
+        ]
+      }
+      
+      sample_utterances = [
+        {
+          utterance = "small"
+        },
+        {
+          utterance = "medium"
+        },
+        {
+          utterance = "large"
+        },
+        {
+          utterance = "extra large"
+        }
+      ]
+      
+      slot_resolution_setting = {
+        slot_resolution_strategy = "Default"
+      }
+    }
+  },
+  {
+    name         = "PizzaToppings"
+    intent_name  = "OrderPizza"
+    locale_id    = "en_US"
+    bot_version  = "DRAFT"
+    description  = "Slot for pizza toppings selection"
+    slot_type_id = "AMAZON.AlphaNumeric"
+    
+    allow_multiple_values = false
+    
+    obfuscation_setting = {
+      obfuscation_setting_type = "DefaultObfuscation"
+    }
+    
+    value_elicitation_setting = {
+      slot_constraint = "Required"
+      
+      prompt_specification = {
+        allow_interrupt            = true
+        max_retries                = 2
+        message_selection_strategy = "Random"
+        
+        message_groups = [
+          {
+            plain_text_message = "What toppings would you like on your pizza? You can choose multiple toppings like pepperoni, mushrooms, onions, or peppers."
+          }
+        ]
+        
+        prompt_attempts_specification = [
+          {
+            allow_interrupt = true
+            map_block_key   = "Initial"
+            allowed_input_types = {
+              allow_audio_input = true
+              allow_dtmf_input  = false
+            }
+            audio_and_dtmf_input_specification = {
+              start_timeout_ms = 4000
+              audio_specification = {
+                end_timeout_ms = 640
+                max_length_ms  = 15000
+              }
+              dtmf_specification = {
+                deletion_character = "*"
+                end_character      = "#"
+                end_timeout_ms     = 5000
+                max_length         = 513
+              }
+            }
+            text_input_specification = {
+              start_timeout_ms = 30000
+            }
+          }
+        ]
+      }
+      
+      sample_utterances = [
+        {
+          utterance = "pepperoni"
+        },
+        {
+          utterance = "mushrooms"
+        },
+        {
+          utterance = "onions"
+        },
+        {
+          utterance = "peppers"
+        },
+        {
+          utterance = "cheese"
+        },
+        {
+          utterance = "sausage"
+        }
+      ]
+      
+      wait_and_continue_specification = {
+        active = true
+        
+        continue_response = {
+          allow_interrupt = true
+          message_groups = [
+            {
+              plain_text_message = "Would you like to add another topping?"
+            }
+          ]
+        }
+        
+        waiting_response = {
+          allow_interrupt = true
+          message_groups = [
+            {
+              plain_text_message = "I'm ready when you are. What toppings would you like?"
+            }
+          ]
+        }
+      }
+    }
+  },
+  {
+    name         = "OrderNumber"
+    intent_name  = "CheckOrderStatus"
+    locale_id    = "en_US"
+    bot_version  = "DRAFT"
+    description  = "Slot for order number input"
+    slot_type_id = "AMAZON.Number"
+    
+    allow_multiple_values = false
+    
+    obfuscation_setting = {
+      obfuscation_setting_type = "None"
+    }
+    
+    value_elicitation_setting = {
+      slot_constraint = "Required"
+      
+      prompt_specification = {
+        allow_interrupt            = true
+        max_retries                = 2
+        message_selection_strategy = "Random"
+        
+        message_groups = [
+          {
+            plain_text_message = "Please provide your order number."
+          },
+          {
+            plain_text_message = "What is your order number?"
+          }
+        ]
+        
+        prompt_attempts_specification = [
+          {
+            allow_interrupt = true
+            map_block_key   = "Initial"
+            allowed_input_types = {
+              allow_audio_input = true
+              allow_dtmf_input  = true
+            }
+            audio_and_dtmf_input_specification = {
+              start_timeout_ms = 4000
+              audio_specification = {
+                end_timeout_ms = 640
+                max_length_ms  = 15000
+              }
+              dtmf_specification = {
+                deletion_character = "*"
+                end_character      = "#"
+                end_timeout_ms     = 5000
+                max_length         = 513
+              }
+            }
+            text_input_specification = {
+              start_timeout_ms = 30000
+            }
+          }
+        ]
+      }
+      
+      slot_resolution_setting = {
+        slot_resolution_strategy = "Default"
+      }
+    }
+  }
+]
+
+# Slot Operation Timeouts
+slot_timeouts = {
+  create = "30m"
+  update = "30m"
+  delete = "30m"
+}
+
 # Intent Operation Timeouts
 intent_timeouts = {
   create = "30m"
