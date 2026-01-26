@@ -452,3 +452,75 @@ variable "slot_timeouts" {
     delete = "30m"
   }
 }
+
+variable "bot_slot_types" {
+  description = "List of custom slot types to create for the bot"
+  type = list(object({
+    name        = string
+    locale_id   = string
+    bot_version = optional(string, "DRAFT")
+    description = optional(string, "")
+    
+    # Parent slot type signature for inheritance
+    parent_slot_type_signature = optional(string, null)
+    
+    # Slot type values configuration
+    slot_type_values = optional(list(object({
+      sample_value = object({
+        value = string
+      })
+      synonyms = optional(list(object({
+        value = string
+      })), [])
+    })), [])
+    
+    # Value selection setting
+    value_selection_setting = optional(object({
+      resolution_strategy = optional(string, "OriginalValue")
+      
+      advanced_recognition_setting = optional(object({
+        audio_recognition_strategy = optional(string, null)
+      }), null)
+      
+      regex_filter = optional(object({
+        pattern = string
+      }), null)
+    }), {
+      resolution_strategy = "OriginalValue"
+    })
+    
+    # Composite slot type setting
+    composite_slot_type_setting = optional(object({
+      sub_slots = optional(list(object({
+        name        = string
+        slot_type_id = string
+      })), [])
+    }), null)
+    
+    # External source setting (for grammar-based slot types)
+    external_source_setting = optional(object({
+      grammar_slot_type_setting = optional(object({
+        source = optional(object({
+          s3_bucket_name = string
+          s3_object_key  = string
+          kms_key_arn    = optional(string, null)
+        }), null)
+      }), null)
+    }), null)
+  }))
+  default = []
+}
+
+variable "slot_type_timeouts" {
+  description = "Timeout configuration for slot type operations"
+  type = object({
+    create = optional(string, "30m")
+    update = optional(string, "30m")
+    delete = optional(string, "30m")
+  })
+  default = {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+}

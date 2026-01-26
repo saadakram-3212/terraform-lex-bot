@@ -18,4 +18,6 @@ module "lex_bot" {
   intent_timeouts             = var.intent_timeouts
   bot_slots                   = var.bot_slots
   slot_timeouts               = var.slot_timeouts
+  bot_slot_types              = var.bot_slot_types
+  slot_type_timeouts          = var.slot_type_timeouts
 }

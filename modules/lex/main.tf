@@ -691,3 +691,102 @@ resource "aws_lexv2models_bot_version" "this" {
     aws_lexv2models_slot.this
   ]
 }
+
+# Lex V2 Slot Type - FIXED VERSION
+resource "aws_lexv2models_slot_type" "this" {
+  for_each = { for slot_type in var.bot_slot_types : 
+    "${slot_type.locale_id}.${slot_type.name}" => slot_type
+  }
+
+  bot_id      = aws_lexv2models_bot.this.id
+  bot_version = each.value.bot_version
+  locale_id   = each.value.locale_id
+  name        = each.value.name
+  
+  description                = each.value.description
+  parent_slot_type_signature = each.value.parent_slot_type_signature
+
+  # Slot type values - ONLY if explicitly provided
+  dynamic "slot_type_values" {
+    for_each = length(each.value.slot_type_values) > 0 ? each.value.slot_type_values : []
+    content {
+      dynamic "sample_value" {
+        for_each = slot_type_values.value.sample_value != null ? [slot_type_values.value.sample_value] : []
+        content {
+          value = sample_value.value.value
+        }
+      }
+
+      dynamic "synonyms" {
+        for_each = slot_type_values.value.synonyms != null ? slot_type_values.value.synonyms : []
+        content {
+          value = synonyms.value.value
+        }
+      }
+    }
+  }
+
+  # Value selection setting - ONLY if slot_type_values is used
+  dynamic "value_selection_setting" {
+    for_each = length(each.value.slot_type_values) > 0 && each.value.value_selection_setting != null ? [each.value.value_selection_setting] : []
+    content {
+      resolution_strategy = value_selection_setting.value.resolution_strategy
+
+      dynamic "advanced_recognition_setting" {
+        for_each = value_selection_setting.value.advanced_recognition_setting != null ? [value_selection_setting.value.advanced_recognition_setting] : []
+        content {
+          audio_recognition_strategy = advanced_recognition_setting.value.audio_recognition_strategy
+        }
+      }
+
+      dynamic "regex_filter" {
+        for_each = value_selection_setting.value.regex_filter != null ? [value_selection_setting.value.regex_filter] : []
+        content {
+          pattern = regex_filter.value.pattern
+        }
+      }
+    }
+  }
+
+  # Composite slot type setting
+  dynamic "composite_slot_type_setting" {
+    for_each = each.value.composite_slot_type_setting != null ? [each.value.composite_slot_type_setting] : []
+    content {
+      dynamic "sub_slots" {
+        for_each = composite_slot_type_setting.value.sub_slots != null ? composite_slot_type_setting.value.sub_slots : []
+        content {
+          name        = sub_slots.value.name
+          slot_type_id = sub_slots.value.slot_type_id
+        }
+      }
+    }
+  }
+
+  # External source setting - ONLY if explicitly provided (MUTUALLY EXCLUSIVE)
+  dynamic "external_source_setting" {
+    for_each = each.value.external_source_setting != null ? [each.value.external_source_setting] : []
+    content {
+      dynamic "grammar_slot_type_setting" {
+        for_each = external_source_setting.value.grammar_slot_type_setting != null ? [external_source_setting.value.grammar_slot_type_setting] : []
+        content {
+          dynamic "source" {
+            for_each = grammar_slot_type_setting.value.source != null ? [grammar_slot_type_setting.value.source] : []
+            content {
+              s3_bucket_name = source.value.s3_bucket_name
+              s3_object_key  = source.value.s3_object_key
+              kms_key_arn    = source.value.kms_key_arn
+            }
+          }
+        }
+      }
+    }
+  }
+
+  timeouts {
+    create = var.slot_type_timeouts.create
+    update = var.slot_type_timeouts.update
+    delete = var.slot_type_timeouts.delete
+  }
+
+  depends_on = [aws_lexv2models_bot_locale.this]
+}

@@ -527,3 +527,57 @@ tags = {
   Team        = "platform"
   ManagedBy   = "Terraform"
 }
+
+# Custom Slot Types Configuration
+bot_slot_types = [
+  # Example 1: Simple custom slot type for pizza sizes
+  {
+    name        = "PizzaSize"
+    locale_id   = "en_US"
+    bot_version = "DRAFT"
+    description = "Custom slot type for pizza sizes"
+    
+    slot_type_values = [
+      {
+        sample_value = {
+          value = "small"
+        }
+        synonyms = [
+          { value = "small pizza" },
+          { value = "personal size" },
+          { value = "individual" }
+        ]
+      },
+      {
+        sample_value = {
+          value = "medium"
+        }
+        synonyms = [
+          { value = "medium pizza" },
+          { value = "regular" },
+          { value = "standard" }
+        ]
+      },
+      {
+        sample_value = {
+          value = "large"
+        }
+        synonyms = [
+          { value = "large pizza" },
+          { value = "family size" },
+          { value = "extra large" }
+        ]
+      }
+    ]
+    
+    value_selection_setting = {
+      resolution_strategy = "OriginalValue"
+    }
+  }
+]
+# Slot Type Operation Timeouts
+slot_type_timeouts = {
+  create = "30m"
+  update = "30m"
+  delete = "30m"
+}
