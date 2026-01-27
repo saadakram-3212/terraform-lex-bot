@@ -22,7 +22,6 @@ module "lex_bot" {
   bot_locales     = each.value.bot_locales
   locale_timeouts = each.value.locale_timeouts
   
-  # Tags (merge global tags with bot-specific tags)
   tags = merge( each.value.tags, {
     BotName = each.value.bot_name
   })
