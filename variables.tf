@@ -455,9 +455,3 @@ variable "lex_bots" {
   }))
   default = {}
 }
-
-variable "global_tags" {
-  description = "Global tags applied to all resources"
-  type        = map(string)
-  default     = {}
-}

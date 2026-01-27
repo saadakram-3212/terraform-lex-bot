@@ -1,13 +1,7 @@
 # AWS Configuration
 aws_region = "us-east-1"
 
-# Global tags for all resources
-global_tags = {
-  Environment = "production"
-  Project     = "lex-bots-platform"
-  ManagedBy   = "Terraform"
-  Department  = "customer-experience"
-}
+
 
 # Multiple Lex Bots Configuration
 lex_bots = {

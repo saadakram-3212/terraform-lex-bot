@@ -692,7 +692,7 @@ resource "aws_lexv2models_bot_version" "this" {
   ]
 }
 
-# Lex V2 Slot Type - FIXED VERSION
+# Lex V2 Slot Type
 resource "aws_lexv2models_slot_type" "this" {
   for_each = { for slot_type in var.bot_slot_types : 
     "${slot_type.locale_id}.${slot_type.name}" => slot_type
@@ -706,7 +706,7 @@ resource "aws_lexv2models_slot_type" "this" {
   description                = each.value.description
   parent_slot_type_signature = each.value.parent_slot_type_signature
 
-  # Slot type values - ONLY if explicitly provided
+  # Slot type values 
   dynamic "slot_type_values" {
     for_each = length(each.value.slot_type_values) > 0 ? each.value.slot_type_values : []
     content {
@@ -726,7 +726,7 @@ resource "aws_lexv2models_slot_type" "this" {
     }
   }
 
-  # Value selection setting - ONLY if slot_type_values is used
+  # Value selection setting 
   dynamic "value_selection_setting" {
     for_each = length(each.value.slot_type_values) > 0 && each.value.value_selection_setting != null ? [each.value.value_selection_setting] : []
     content {
@@ -762,7 +762,7 @@ resource "aws_lexv2models_slot_type" "this" {
     }
   }
 
-  # External source setting - ONLY if explicitly provided (MUTUALLY EXCLUSIVE)
+  # External source setting 
   dynamic "external_source_setting" {
     for_each = each.value.external_source_setting != null ? [each.value.external_source_setting] : []
     content {
