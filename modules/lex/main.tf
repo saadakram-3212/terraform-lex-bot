@@ -815,12 +815,11 @@ locals {
   }
 }
 
-# Update intent slot priorities using AWS CLI - one update per intent
+# Update intent slot priorities using AWS CLI via null_resource
 resource "null_resource" "update_intent_slots" {
   for_each = local.intent_slot_groups
 
   triggers = {
-    # Trigger on any change to the slots in this intent
     slot_priorities = jsonencode([
       for item in each.value : {
         priority = item.priority

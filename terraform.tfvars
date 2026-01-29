@@ -49,7 +49,6 @@ lex_bots = {
       delete = "30m"
     }
     
-    # Simple intents (just 2)
     bot_intents = [
       # Intent 1: Greeting
       {
@@ -111,7 +110,6 @@ lex_bots = {
       delete = "30m"
     }
     
-    # Simple slots (just 1 for the AskQuestion intent)
     bot_slots = [
       {
         name         = "QuestionTopic"
@@ -204,7 +202,7 @@ lex_bots = {
       delete = "30m"
     }
     
-    # Simple custom slot type
+    #custom slot type
     bot_slot_types = [
       {
         name        = "TopicType"
@@ -248,7 +246,7 @@ lex_bots = {
       delete = "30m"
     }
     
-    # Simple bot version
+    # bot version
     bot_versions = [
       {
         version_name = "v1"
