@@ -120,6 +120,7 @@ lex_bots = {
         bot_version  = "DRAFT"
         description  = "Slot to capture the question topic"
         slot_type_id = "AMAZON.AlphaNumeric"
+        priority     = 1
         
         allow_multiple_values = false
         
@@ -235,7 +236,7 @@ lex_bots = {
         ]
         
         value_selection_setting = {
-          resolution_strategy = "OriginalValue"
+          resolution_strategy = "TopResolution"
         }
       }
     ]
@@ -487,6 +488,7 @@ lex_bots = {
         bot_version  = "DRAFT"
         description  = "Travel destination"
         slot_type_id = "AMAZON.City"
+        priority     = 2
         
         allow_multiple_values = false
         
@@ -530,6 +532,7 @@ lex_bots = {
         bot_version  = "DRAFT"
         description  = "Date of travel"
         slot_type_id = "AMAZON.Date"
+        priority     = 1
         
         allow_multiple_values = false
         
@@ -561,6 +564,7 @@ lex_bots = {
         bot_version  = "DRAFT"
         description  = "Departure city for travel"
         slot_type_id = "AMAZON.City"
+        priority     = 1
         
         allow_multiple_values = false
         
@@ -631,7 +635,7 @@ lex_bots = {
         ]
         
         value_selection_setting = {
-          resolution_strategy = "OriginalValue"
+          resolution_strategy = "TopResolution"
         }
       }
     ]
@@ -654,15 +658,6 @@ lex_bots = {
           }
         }
       }
-    #   {
-    #     version_name = "production"
-    #     description  = "Production version with all features"
-    #     locale_specification = {
-    #       "en_US" = {
-    #         source_bot_version = "DRAFT"
-    #       }
-    #     }
-    #   }
     ]
   }
 }

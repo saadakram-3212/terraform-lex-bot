@@ -161,6 +161,7 @@ variable "lex_bots" {
       bot_version        = optional(string, "DRAFT")
       description        = optional(string, "")
       slot_type_id       = optional(string, null)
+      priority           = optional(number, 1)
       
       allow_multiple_values = optional(bool, false)
       

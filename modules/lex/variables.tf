@@ -177,7 +177,7 @@ variable "bot_slots" {
     bot_version        = string
     description        = optional(string)
     slot_type_id       = optional(string)
-    
+    priority           = optional(number, 1)
     # Multiple values setting
     allow_multiple_values = optional(bool, false)
     

@@ -790,3 +790,64 @@ resource "aws_lexv2models_slot_type" "this" {
 
   depends_on = [aws_lexv2models_bot_locale.this]
 }
+
+# Local variable to group slots by intent and locale
+locals {
+  intent_slot_pairs = flatten([
+    for slot in var.bot_slots : [
+      {
+        intent_name = slot.intent_name
+        locale_id   = slot.locale_id
+        slot_name   = slot.name
+        priority    = try(slot.priority, 1)
+      }
+    ] if try(slot.priority, null) != null
+  ])
+
+  # Create a map grouping slots by intent and locale
+  intent_slot_groups = {
+    for pair in distinct([
+      for item in local.intent_slot_pairs : "${item.intent_name}.${item.locale_id}"
+    ]) : pair => [
+      for item in local.intent_slot_pairs : item
+      if "${item.intent_name}.${item.locale_id}" == pair
+    ]
+  }
+}
+
+# Update intent slot priorities using AWS CLI - one update per intent
+resource "null_resource" "update_intent_slots" {
+  for_each = local.intent_slot_groups
+
+  triggers = {
+    # Trigger on any change to the slots in this intent
+    slot_priorities = jsonencode([
+      for item in each.value : {
+        priority = item.priority
+        slot_id  = aws_lexv2models_slot.this["${item.intent_name}.${item.locale_id}.${item.slot_name}"].id
+      }
+    ])
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws lexv2-models update-intent \
+        --bot-id ${aws_lexv2models_bot.this.id} \
+        --bot-version DRAFT \
+        --locale-id ${each.value[0].locale_id} \
+        --intent-id ${aws_lexv2models_intent.this[each.value[0].intent_name].intent_id} \
+        --intent-name ${each.value[0].intent_name} \
+        --slot-priorities '${jsonencode([
+          for item in each.value : {
+            priority = item.priority
+            slotId   = split(",", aws_lexv2models_slot.this["${item.intent_name}.${item.locale_id}.${item.slot_name}"].id)[4]
+          }
+        ])}'
+    EOT
+  }
+
+  depends_on = [
+    aws_lexv2models_intent.this,
+    aws_lexv2models_slot.this
+  ]
+}
