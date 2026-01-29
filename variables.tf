@@ -58,6 +58,15 @@ variable "lex_bots" {
       description = optional(string, "")
       sample_utterances = optional(list(string), [])
       parent_intent_signature = optional(string, null)
+
+    initial_response_setting = optional(object({
+      initial_response = optional(object({
+        allow_interrupt = bool
+        message_groups = list(object({
+          plain_text_message = string
+        }))
+      }))
+    }))
       
       dialog_code_hook = optional(object({
         enabled = bool

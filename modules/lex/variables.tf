@@ -80,6 +80,15 @@ variable "bot_intents" {
     description = optional(string)
     sample_utterances = list(string)
     
+    initial_response_setting = optional(object({
+      initial_response = optional(object({
+        allow_interrupt = bool
+        message_groups = list(object({
+          plain_text_message = string
+        }))
+      }))
+    }))
+    
     dialog_code_hook = optional(object({
       enabled = bool
     }))

@@ -88,6 +88,17 @@ lex_bots = {
           "I need assistance",
           "Can you answer something?"
         ]
+
+        initial_response_setting = {
+      initial_response = {
+        allow_interrupt = true
+        message_groups = [
+          {
+            plain_text_message = "Hello! How can I assist you?"
+          }
+        ]
+      }
+    }
         
         closing_setting = {
           active = true
@@ -348,8 +359,8 @@ lex_bots = {
         ]
         
         fulfillment_code_hook = {
-          enabled = true
-          active  = true
+          enabled = false
+          active  = false
         }
         
         closing_setting = {
@@ -436,8 +447,8 @@ lex_bots = {
         }
         
         fulfillment_code_hook = {
-          enabled = true
-          active  = true
+          enabled = false
+          active  = false
         }
       },
       

@@ -110,6 +110,31 @@ resource "aws_lexv2models_intent" "this" {
     }
   }
 
+  ##Inital Response
+  dynamic "initial_response_setting" {
+    for_each = each.value.initial_response_setting != null ? [each.value.initial_response_setting] : []
+    content {
+      # Initial Response
+      dynamic "initial_response" {
+        for_each = initial_response_setting.value.initial_response != null ? [initial_response_setting.value.initial_response] : []
+        content {
+          allow_interrupt = initial_response.value.allow_interrupt
+          
+          dynamic "message_group" {
+            for_each = initial_response.value.message_groups
+            content {
+              message {
+                plain_text_message {
+                  value = message_group.value.plain_text_message
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   # Dialog Code Hook
   dynamic "dialog_code_hook" {
     for_each = each.value.dialog_code_hook != null ? [each.value.dialog_code_hook] : []
