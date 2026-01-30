@@ -111,7 +111,6 @@ output "lex_bot_intent_full_ids" {
   }
 }
 
-# New outputs for slots and slot types
 # output "lex_bot_slot_ids" {
 #   description = "Map of bot names to their slot IDs"
 #   value = {
@@ -128,7 +127,6 @@ output "lex_bot_intent_full_ids" {
 #   }
 # }
 
-# Individual bot outputs (direct access to your simple_faq_bot)
 output "simple_faq_bot_id" {
   description = "ID of the simple FAQ bot"
   value       = module.lex_bot["simple_faq_bot"].bot_id
