@@ -816,7 +816,6 @@ resource "aws_lexv2models_slot_type" "this" {
   depends_on = [aws_lexv2models_bot_locale.this]
 }
 
-# Local variable to group slots by intent and locale
 locals {
   intent_slot_pairs = flatten([
     for slot in var.bot_slots : [
@@ -829,7 +828,6 @@ locals {
     ] if try(slot.priority, null) != null
   ])
 
-  # Create a map grouping slots by intent and locale
   intent_slot_groups = {
     for pair in distinct([
       for item in local.intent_slot_pairs : "${item.intent_name}.${item.locale_id}"
@@ -837,6 +835,11 @@ locals {
       for item in local.intent_slot_pairs : item
       if "${item.intent_name}.${item.locale_id}" == pair
     ]
+  }
+
+  intent_utterances_map = {
+    for intent in var.bot_intents : 
+    "${intent.name}.${intent.locale_id}" => intent.sample_utterances
   }
 }
 
@@ -851,6 +854,7 @@ resource "null_resource" "update_intent_slots" {
         slot_id  = aws_lexv2models_slot.this["${item.intent_name}.${item.locale_id}.${item.slot_name}"].id
       }
     ])
+    utterances = jsonencode(lookup(local.intent_utterances_map, each.key, []))
   }
 
   provisioner "local-exec" {
@@ -865,6 +869,11 @@ resource "null_resource" "update_intent_slots" {
           for item in each.value : {
             priority = item.priority
             slotId   = split(",", aws_lexv2models_slot.this["${item.intent_name}.${item.locale_id}.${item.slot_name}"].id)[4]
+          }
+        ])}' \
+        --sample-utterances '${jsonencode([
+          for utterance in lookup(local.intent_utterances_map, each.key, []) : {
+            utterance = utterance
           }
         ])}'
     EOT

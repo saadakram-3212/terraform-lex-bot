@@ -1,8 +1,6 @@
 # AWS Configuration
 aws_region = "us-east-1"
 
-
-
 # Multiple Lex Bots Configuration
 lex_bots = {
   # Bot 1: Simple FAQ Bot
@@ -63,10 +61,9 @@ lex_bots = {
           "Good afternoon"
         ]
         
-        closing_setting = {
-          active = true
-          closing_response = {
-            allow_interrupt = false
+        initial_response_setting = {
+          initial_response = {
+            allow_interrupt = true
             message_groups = [
               {
                 plain_text_message = "Hello! How can I help you today?"
@@ -74,6 +71,32 @@ lex_bots = {
             ]
           }
         }
+        
+        dialog_code_hook = null
+        
+        fulfillment_code_hook = {
+          enabled = false
+          active  = false
+        }
+        
+        confirmation_setting = null
+        
+        closing_setting = {
+          active = true
+          closing_response = {
+            allow_interrupt = false
+            message_groups = [
+              {
+                plain_text_message = "Is there anything else I can help you with?"
+              }
+            ]
+          }
+        }
+        
+        input_contexts  = []
+        output_contexts = []
+        kendra_configuration = null
+        parent_intent_signature = null
       },
       
       # Intent 2: AskQuestion
@@ -90,15 +113,24 @@ lex_bots = {
         ]
 
         initial_response_setting = {
-      initial_response = {
-        allow_interrupt = true
-        message_groups = [
-          {
-            plain_text_message = "Hello! How can I assist you?"
+          initial_response = {
+            allow_interrupt = true
+            message_groups = [
+              {
+                plain_text_message = "Hello! How can I assist you?"
+              }
+            ]
           }
-        ]
-      }
-    }
+        }
+        
+        dialog_code_hook = null
+        
+        fulfillment_code_hook = {
+          enabled = false
+          active  = false
+        }
+        
+        confirmation_setting = null
         
         closing_setting = {
           active = true
@@ -111,6 +143,11 @@ lex_bots = {
             ]
           }
         }
+        
+        input_contexts  = []
+        output_contexts = []
+        kendra_configuration = null
+        parent_intent_signature = null
       }
     ]
     
@@ -202,7 +239,11 @@ lex_bots = {
           slot_resolution_setting = {
             slot_resolution_strategy = "Default"
           }
+          
+          wait_and_continue_specification = null
         }
+        
+        sub_slot_setting = null
       }
     ]
     
@@ -220,6 +261,8 @@ lex_bots = {
         locale_id   = "en_US"
         bot_version = "DRAFT"
         description = "Custom slot type for question topics"
+        
+        parent_slot_type_signature = null
         
         slot_type_values = [
           {
@@ -246,7 +289,12 @@ lex_bots = {
         
         value_selection_setting = {
           resolution_strategy = "TopResolution"
+          advanced_recognition_setting = null
+          regex_filter = null
         }
+        
+        composite_slot_type_setting = null
+        external_source_setting = null
       }
     ]
     
@@ -330,6 +378,26 @@ lex_bots = {
           "Travel information please",
           "Help with travel planning"
         ]
+
+        initial_response_setting = {
+          initial_response = {
+            allow_interrupt = true
+            message_groups = [
+              {
+                plain_text_message = "Welcome to the travel bot! You can ask me about travel options, destinations, and booking assistance."
+              }
+            ]
+          }
+        }
+        
+        dialog_code_hook = null
+        
+        fulfillment_code_hook = {
+          enabled = false
+          active  = false
+        }
+        
+        confirmation_setting = null
         
         closing_setting = {
           active = true
@@ -342,6 +410,11 @@ lex_bots = {
             ]
           }
         }
+        
+        input_contexts  = []
+        output_contexts = []
+        kendra_configuration = null
+        parent_intent_signature = null
       },
       
       # Intent 2: VIP Customer
@@ -357,11 +430,26 @@ lex_bots = {
           "I have VIP status",
           "VIP customer support"
         ]
+
+        initial_response_setting = {
+          initial_response = {
+            allow_interrupt = true
+            message_groups = [
+              {
+                plain_text_message = "Hello! Thank you for being a VIP customer. How can I assist you today?"
+              }
+            ]
+          }
+        }
+        
+        dialog_code_hook = null
         
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
+        
+        confirmation_setting = null
         
         closing_setting = {
           active = true
@@ -374,6 +462,11 @@ lex_bots = {
             ]
           }
         }
+        
+        input_contexts  = []
+        output_contexts = []
+        kendra_configuration = null
+        parent_intent_signature = null
       },
       
       # Intent 3: SpeaktoAgent
@@ -390,6 +483,26 @@ lex_bots = {
           "Transfer to customer service"
         ]
         
+        initial_response_setting = {
+          initial_response = {
+            allow_interrupt = true
+            message_groups = [
+              {
+                plain_text_message = "Let me connect you with an agent."
+              }
+            ]
+          }
+        }
+        
+        dialog_code_hook = null
+        
+        fulfillment_code_hook = {
+          enabled = false
+          active  = false
+        }
+        
+        confirmation_setting = null
+        
         closing_setting = {
           active = true
           closing_response = {
@@ -401,6 +514,11 @@ lex_bots = {
             ]
           }
         }
+        
+        input_contexts  = []
+        output_contexts = []
+        kendra_configuration = null
+        parent_intent_signature = null
       },
       
       # Intent 4: BookTickets
@@ -416,6 +534,24 @@ lex_bots = {
           "Purchase bus tickets",
           "I need to book travel"
         ]
+
+        initial_response_setting = {
+          initial_response = {
+            allow_interrupt = true
+            message_groups = [
+              {
+                plain_text_message = "Starting the ticket booking process. Please provide your travel details."
+              }
+            ]
+          }
+        }
+        
+        dialog_code_hook = null
+        
+        fulfillment_code_hook = {
+          enabled = false
+          active  = false
+        }
         
         confirmation_setting = {
           active = true
@@ -431,7 +567,9 @@ lex_bots = {
                 plain_text_message = "Confirm your booking?"
               }
             ]
+            prompt_attempts_specification = []
           }
+          declination_response = null
         }
         
         closing_setting = {
@@ -446,10 +584,10 @@ lex_bots = {
           }
         }
         
-        fulfillment_code_hook = {
-          enabled = false
-          active  = false
-        }
+        input_contexts  = []
+        output_contexts = []
+        kendra_configuration = null
+        parent_intent_signature = null
       },
       
       # Intent 5: GetDepartureLocations
@@ -466,6 +604,26 @@ lex_bots = {
           "List departure cities"
         ]
         
+        initial_response_setting = {
+          initial_response = {
+            allow_interrupt = true
+            message_groups = [
+              {
+                plain_text_message = "Let me show you the available departure locations."
+              }
+            ]
+          }
+        }
+        
+        dialog_code_hook = null
+        
+        fulfillment_code_hook = {
+          enabled = false
+          active  = false
+        }
+        
+        confirmation_setting = null
+        
         closing_setting = {
           active = true
           closing_response = {
@@ -477,6 +635,11 @@ lex_bots = {
             ]
           }
         }
+        
+        input_contexts  = []
+        output_contexts = []
+        kendra_configuration = null
+        parent_intent_signature = null
       }
     ]
     
@@ -501,8 +664,12 @@ lex_bots = {
         
         allow_multiple_values = false
         
+        obfuscation_setting = null
+        
         value_elicitation_setting = {
           slot_constraint = "Required"
+          
+          default_value_specification = null
           
           prompt_specification = {
             allow_interrupt            = true
@@ -517,6 +684,8 @@ lex_bots = {
                 plain_text_message = "Please tell me your destination city."
               }
             ]
+            
+            prompt_attempts_specification = null
           }
           
           sample_utterances = [
@@ -530,7 +699,12 @@ lex_bots = {
               utterance = "Tokyo"
             }
           ]
+          
+          slot_resolution_setting = null
+          wait_and_continue_specification = null
         }
+        
+        sub_slot_setting = null
       },
       
       # Slot for BookTickets intent - Travel Date
@@ -545,8 +719,12 @@ lex_bots = {
         
         allow_multiple_values = false
         
+        obfuscation_setting = null
+        
         value_elicitation_setting = {
           slot_constraint = "Required"
+          
+          default_value_specification = null
           
           prompt_specification = {
             allow_interrupt            = true
@@ -561,8 +739,16 @@ lex_bots = {
                 plain_text_message = "Please provide your travel date."
               }
             ]
+            
+            prompt_attempts_specification = null
           }
+          
+          sample_utterances = null
+          slot_resolution_setting = null
+          wait_and_continue_specification = null
         }
+        
+        sub_slot_setting = null
       },
       
       # Slot for GetDepartureLocations intent
@@ -577,8 +763,12 @@ lex_bots = {
         
         allow_multiple_values = false
         
+        obfuscation_setting = null
+        
         value_elicitation_setting = {
           slot_constraint = "Optional"
+          
+          default_value_specification = null
           
           prompt_specification = {
             allow_interrupt            = true
@@ -590,8 +780,16 @@ lex_bots = {
                 plain_text_message = "Which city are you departing from? (optional)"
               }
             ]
+            
+            prompt_attempts_specification = null
           }
+          
+          sample_utterances = null
+          slot_resolution_setting = null
+          wait_and_continue_specification = null
         }
+        
+        sub_slot_setting = null
       }
     ]
     
@@ -609,6 +807,8 @@ lex_bots = {
         locale_id   = "en_US"
         bot_version = "DRAFT"
         description = "Travel class options"
+        
+        parent_slot_type_signature = null
         
         slot_type_values = [
           {
@@ -645,7 +845,12 @@ lex_bots = {
         
         value_selection_setting = {
           resolution_strategy = "TopResolution"
+          advanced_recognition_setting = null
+          regex_filter = null
         }
+        
+        composite_slot_type_setting = null
+        external_source_setting = null
       }
     ]
     
