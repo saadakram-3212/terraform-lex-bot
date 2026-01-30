@@ -817,15 +817,20 @@ resource "aws_lexv2models_slot_type" "this" {
 }
 
 locals {
+  # Canonical intent key
+  intents_by_key = {
+    for intent in var.bot_intents : "${intent.name}.${intent.locale_id}" => intent
+  }
+
+  # -------- Slots (your existing logic) --------
   intent_slot_pairs = flatten([
-    for slot in var.bot_slots : [
-      {
-        intent_name = slot.intent_name
-        locale_id   = slot.locale_id
-        slot_name   = slot.name
-        priority    = try(slot.priority, 1)
-      }
-    ] if try(slot.priority, null) != null
+    for slot in var.bot_slots : [{
+      intent_name = slot.intent_name
+      locale_id   = slot.locale_id
+      slot_name   = slot.name
+      priority    = try(slot.priority, 1)
+    }]
+    if try(slot.priority, null) != null
   ])
 
   intent_slot_groups = {
@@ -837,24 +842,60 @@ locals {
     ]
   }
 
+  # -------- Intent-level maps --------
   intent_utterances_map = {
-    for intent in var.bot_intents : 
-    "${intent.name}.${intent.locale_id}" => intent.sample_utterances
+    for k, intent in local.intents_by_key : k => intent.sample_utterances
+  }
+
+  intent_dialog_code_hook_map = {
+    for k, intent in local.intents_by_key : k => intent.dialog_code_hook
+  }
+
+  intent_fulfillment_code_hook_map = {
+    for k, intent in local.intents_by_key : k => intent.fulfillment_code_hook
+  }
+
+  intent_initial_response_map = {
+    for k, intent in local.intents_by_key : k => try(intent.initial_response_setting.initial_response, null)
+  }
+
+  intent_confirmation_setting_map = {
+    for k, intent in local.intents_by_key : k => intent.confirmation_setting
+  }
+
+  intent_closing_response_map = {
+    for k, intent in local.intents_by_key : k => try(intent.closing_setting.closing_response, null)
+  }
+
+  intent_input_contexts_map = {
+    for k, intent in local.intents_by_key : k => intent.input_contexts
+  }
+
+  intent_output_contexts_map = {
+    for k, intent in local.intents_by_key : k => intent.output_contexts
+  }
+
+  intent_kendra_configuration_map = {
+    for k, intent in local.intents_by_key : k => intent.kendra_configuration
   }
 }
 
-# Update intent slot priorities using AWS CLI via null_resource
-resource "null_resource" "update_intent_slots" {
+resource "null_resource" "update_intent" {
   for_each = local.intent_slot_groups
 
   triggers = {
-    slot_priorities = jsonencode([
-      for item in each.value : {
-        priority = item.priority
-        slot_id  = aws_lexv2models_slot.this["${item.intent_name}.${item.locale_id}.${item.slot_name}"].id
-      }
-    ])
-    utterances = jsonencode(lookup(local.intent_utterances_map, each.key, []))
+    intent_hash = sha1(jsonencode({
+      utterances   = local.intent_utterances_map[each.key]
+      dialog_hook  = local.intent_dialog_code_hook_map[each.key]
+      fulfillment  = local.intent_fulfillment_code_hook_map[each.key]
+      initial      = local.intent_initial_response_map[each.key]
+      confirmation = local.intent_confirmation_setting_map[each.key]
+      closing      = local.intent_closing_response_map[each.key]
+      input_ctx    = local.intent_input_contexts_map[each.key]
+      output_ctx   = local.intent_output_contexts_map[each.key]
+      kendra       = local.intent_kendra_configuration_map[each.key]
+      slots        = each.value
+    }))
   }
 
   provisioner "local-exec" {
@@ -865,17 +906,16 @@ resource "null_resource" "update_intent_slots" {
         --locale-id ${each.value[0].locale_id} \
         --intent-id ${aws_lexv2models_intent.this[each.value[0].intent_name].intent_id} \
         --intent-name ${each.value[0].intent_name} \
-        --slot-priorities '${jsonencode([
-          for item in each.value : {
-            priority = item.priority
-            slotId   = split(",", aws_lexv2models_slot.this["${item.intent_name}.${item.locale_id}.${item.slot_name}"].id)[4]
-          }
-        ])}' \
-        --sample-utterances '${jsonencode([
-          for utterance in lookup(local.intent_utterances_map, each.key, []) : {
-            utterance = utterance
-          }
-        ])}'
+        --sample-utterances "${replace(jsonencode([for u in local.intent_utterances_map[each.key] : { utterance = u }]), "\"", "\\\"")}" \
+        --slot-priorities "${replace(jsonencode([for item in each.value : { priority = item.priority, slotId = split(",", aws_lexv2models_slot.this["${item.intent_name}.${item.locale_id}.${item.slot_name}"].id)[4] }]), "\"", "\\\"")}" \
+        ${local.intent_dialog_code_hook_map[each.key] != null ? "--dialog-code-hook \"${replace(jsonencode({ enabled = local.intent_dialog_code_hook_map[each.key].enabled }), "\"", "\\\"")}\"" : ""} \
+        ${local.intent_fulfillment_code_hook_map[each.key] != null ? "--fulfillment-code-hook \"${replace(jsonencode({ enabled = local.intent_fulfillment_code_hook_map[each.key].enabled, active = local.intent_fulfillment_code_hook_map[each.key].active }), "\"", "\\\"")}\"" : ""} \
+        ${local.intent_initial_response_map[each.key] != null ? "--initial-response-setting \"${replace(jsonencode({ initialResponse = { allowInterrupt = local.intent_initial_response_map[each.key].allow_interrupt, messageGroups = [for mg in local.intent_initial_response_map[each.key].message_groups : { message = { plainTextMessage = { value = mg.plain_text_message }}}]}}), "\"", "\\\"")}\"" : ""} \
+        ${local.intent_confirmation_setting_map[each.key] != null ? "--intent-confirmation-setting \"${replace(jsonencode(merge({ active = local.intent_confirmation_setting_map[each.key].active, promptSpecification = { maxRetries = local.intent_confirmation_setting_map[each.key].prompt_specification.max_retries, allowInterrupt = local.intent_confirmation_setting_map[each.key].prompt_specification.allow_interrupt, messageSelectionStrategy = local.intent_confirmation_setting_map[each.key].prompt_specification.message_selection_strategy, messageGroups = [for mg in local.intent_confirmation_setting_map[each.key].prompt_specification.message_groups : { message = { plainTextMessage = { value = mg.plain_text_message }}}]}}, local.intent_confirmation_setting_map[each.key].declination_response != null ? { declinationResponse = { allowInterrupt = local.intent_confirmation_setting_map[each.key].declination_response.allow_interrupt, messageGroups = [for mg in local.intent_confirmation_setting_map[each.key].declination_response.message_groups : { message = { plainTextMessage = { value = mg.plain_text_message }}}]}} : {})), "\"", "\\\"")}\"" : ""} \
+        ${local.intent_closing_response_map[each.key] != null ? "--intent-closing-setting \"${replace(jsonencode({ active = true, closingResponse = { allowInterrupt = local.intent_closing_response_map[each.key].allow_interrupt, messageGroups = [for mg in local.intent_closing_response_map[each.key].message_groups : { message = { plainTextMessage = { value = mg.plain_text_message }}}]}}), "\"", "\\\"")}\"" : ""} \
+        --input-contexts "${replace(jsonencode([for c in local.intent_input_contexts_map[each.key] : { name = c }]), "\"", "\\\"")}" \
+        --output-contexts "${replace(jsonencode([for c in local.intent_output_contexts_map[each.key] : { name = c.name, timeToLiveInSeconds = c.time_to_live_in_seconds, turnsToLive = c.turns_to_live }]), "\"", "\\\"")}" \
+        ${local.intent_kendra_configuration_map[each.key] != null ? "--kendra-configuration \"${replace(jsonencode({ kendraIndex = local.intent_kendra_configuration_map[each.key].kendra_index, queryFilterString = local.intent_kendra_configuration_map[each.key].query_filter_string, queryFilterStringEnabled = local.intent_kendra_configuration_map[each.key].query_filter_string_enabled }), "\"", "\\\"")}\"" : ""}
     EOT
   }
 
