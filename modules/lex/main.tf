@@ -817,12 +817,10 @@ resource "aws_lexv2models_slot_type" "this" {
 }
 
 locals {
-  # Canonical intent key
   intents_by_key = {
     for intent in var.bot_intents : "${intent.name}.${intent.locale_id}" => intent
   }
 
-  # -------- Slots (your existing logic) --------
   intent_slot_pairs = flatten([
     for slot in var.bot_slots : [{
       intent_name = slot.intent_name
@@ -842,7 +840,7 @@ locals {
     ]
   }
 
-  # -------- Intent-level maps --------
+  # Intent-level maps 
   intent_utterances_map = {
     for k, intent in local.intents_by_key : k => intent.sample_utterances
   }
