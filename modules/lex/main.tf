@@ -119,7 +119,7 @@ resource "aws_lexv2models_intent" "this" {
         for_each = initial_response_setting.value.initial_response != null ? [initial_response_setting.value.initial_response] : []
         content {
           allow_interrupt = initial_response.value.allow_interrupt
-          
+
           dynamic "message_group" {
             for_each = initial_response.value.message_groups
             content {
@@ -149,7 +149,7 @@ resource "aws_lexv2models_intent" "this" {
     content {
       enabled = fulfillment_code_hook.value.enabled
       active  = fulfillment_code_hook.value.active
-      
+
       dynamic "post_fulfillment_status_specification" {
         for_each = fulfillment_code_hook.value.post_fulfillment_status_specification != null ? [fulfillment_code_hook.value.post_fulfillment_status_specification] : []
         content {
@@ -157,7 +157,7 @@ resource "aws_lexv2models_intent" "this" {
             for_each = post_fulfillment_status_specification.value.success_response != null ? [post_fulfillment_status_specification.value.success_response] : []
             content {
               allow_interrupt = success_response.value.allow_interrupt
-              
+
               dynamic "message_group" {
                 for_each = success_response.value.message_groups
                 content {
@@ -297,9 +297,9 @@ resource "aws_lexv2models_intent" "this" {
   dynamic "output_context" {
     for_each = each.value.output_contexts
     content {
-      name                   = output_context.value.name
+      name                    = output_context.value.name
       time_to_live_in_seconds = output_context.value.time_to_live_in_seconds
-      turns_to_live          = output_context.value.turns_to_live
+      turns_to_live           = output_context.value.turns_to_live
     }
   }
 
@@ -307,9 +307,9 @@ resource "aws_lexv2models_intent" "this" {
   dynamic "kendra_configuration" {
     for_each = each.value.kendra_configuration != null ? [each.value.kendra_configuration] : []
     content {
-      kendra_index                 = kendra_configuration.value.kendra_index
-      query_filter_string          = kendra_configuration.value.query_filter_string
-      query_filter_string_enabled  = kendra_configuration.value.query_filter_string_enabled
+      kendra_index                = kendra_configuration.value.kendra_index
+      query_filter_string         = kendra_configuration.value.query_filter_string
+      query_filter_string_enabled = kendra_configuration.value.query_filter_string_enabled
     }
   }
 
@@ -327,7 +327,7 @@ resource "aws_lexv2models_intent" "this" {
 # Lex V2 Slot
 resource "aws_lexv2models_slot" "this" {
   for_each = {
-    for slot in var.bot_slots : 
+    for slot in var.bot_slots :
     "${slot.intent_name}.${slot.locale_id}.${slot.name}" => slot
   }
 
@@ -336,7 +336,7 @@ resource "aws_lexv2models_slot" "this" {
   intent_id   = aws_lexv2models_intent.this[each.value.intent_name].intent_id
   locale_id   = each.value.locale_id
   name        = each.value.name
-  
+
   description  = each.value.description
   slot_type_id = each.value.slot_type_id
 
@@ -522,10 +522,10 @@ resource "aws_lexv2models_slot" "this" {
         for_each = sub_slot_setting.value.slot_specification != null ? sub_slot_setting.value.slot_specification : {}
         iterator = spec
         content {
-          slot_type_id = spec.value.slot_type_id
+          slot_type_id  = spec.value.slot_type_id
           map_block_key = spec.key
 
-          value_elicitation_setting {            
+          value_elicitation_setting {
             # Include default value specification if provided
             dynamic "default_value_specification" {
               for_each = try(spec.value.value_elicitation_setting.default_value_specification != null ? [spec.value.value_elicitation_setting.default_value_specification] : [], [])
@@ -538,7 +538,7 @@ resource "aws_lexv2models_slot" "this" {
                 }
               }
             }
-            
+
             # Include prompt specification if provided
             dynamic "prompt_specification" {
               for_each = try(spec.value.value_elicitation_setting.prompt_specification != null ? [spec.value.value_elicitation_setting.prompt_specification] : [], [])
@@ -557,19 +557,19 @@ resource "aws_lexv2models_slot" "this" {
                     }
                   }
                 }
-                
+
                 # Include prompt attempts specification if provided
                 dynamic "prompt_attempts_specification" {
                   for_each = try(prompt_specification.value.prompt_attempts_specification != null ? prompt_specification.value.prompt_attempts_specification : [], [])
                   content {
                     allow_interrupt = prompt_attempts_specification.value.allow_interrupt
                     map_block_key   = prompt_attempts_specification.value.map_block_key
-                    
+
                     allowed_input_types {
                       allow_audio_input = prompt_attempts_specification.value.allowed_input_types.allow_audio_input
                       allow_dtmf_input  = prompt_attempts_specification.value.allowed_input_types.allow_dtmf_input
                     }
-                    
+
                     # Include audio and dtmf input specification if provided
                     dynamic "audio_and_dtmf_input_specification" {
                       for_each = try(prompt_attempts_specification.value.audio_and_dtmf_input_specification != null ? [prompt_attempts_specification.value.audio_and_dtmf_input_specification] : [], [])
@@ -589,7 +589,7 @@ resource "aws_lexv2models_slot" "this" {
                         }
                       }
                     }
-                    
+
                     # Include text input specification if provided
                     dynamic "text_input_specification" {
                       for_each = try(prompt_attempts_specification.value.text_input_specification != null ? [prompt_attempts_specification.value.text_input_specification] : [], [])
@@ -601,7 +601,7 @@ resource "aws_lexv2models_slot" "this" {
                 }
               }
             }
-            
+
             # Include sample utterances if provided
             dynamic "sample_utterance" {
               for_each = try(spec.value.value_elicitation_setting.sample_utterances != null ? spec.value.value_elicitation_setting.sample_utterances : [], [])
@@ -609,15 +609,15 @@ resource "aws_lexv2models_slot" "this" {
                 utterance = sample_utterance.value.utterance
               }
             }
-            
+
             # Include slot resolution setting if provided
             #dynamic "slot_resolution_setting" {
-              #for_each = try(spec.value.value_elicitation_setting.slot_resolution_setting != null ? [spec.value.value_elicitation_setting.slot_resolution_setting] : [], [])
-              #content {
-                #slot_resolution_strategy = slot_resolution_setting.value.slot_resolution_strategy
-              #}
+            #for_each = try(spec.value.value_elicitation_setting.slot_resolution_setting != null ? [spec.value.value_elicitation_setting.slot_resolution_setting] : [], [])
+            #content {
+            #slot_resolution_strategy = slot_resolution_setting.value.slot_resolution_strategy
             #}
-            
+            #}
+
             # Include wait and continue specification if provided
             dynamic "wait_and_continue_specification" {
               for_each = try(spec.value.value_elicitation_setting.wait_and_continue_specification != null ? [spec.value.value_elicitation_setting.wait_and_continue_specification] : [], [])
@@ -719,7 +719,7 @@ resource "aws_lexv2models_bot_version" "this" {
 
 # Lex V2 Slot Type
 resource "aws_lexv2models_slot_type" "this" {
-  for_each = { for slot_type in var.bot_slot_types : 
+  for_each = { for slot_type in var.bot_slot_types :
     "${slot_type.locale_id}.${slot_type.name}" => slot_type
   }
 
@@ -727,7 +727,7 @@ resource "aws_lexv2models_slot_type" "this" {
   bot_version = each.value.bot_version
   locale_id   = each.value.locale_id
   name        = each.value.name
-  
+
   description                = each.value.description
   parent_slot_type_signature = each.value.parent_slot_type_signature
 
@@ -780,7 +780,7 @@ resource "aws_lexv2models_slot_type" "this" {
       dynamic "sub_slots" {
         for_each = composite_slot_type_setting.value.sub_slots != null ? composite_slot_type_setting.value.sub_slots : []
         content {
-          name        = sub_slots.value.name
+          name         = sub_slots.value.name
           slot_type_id = sub_slots.value.slot_type_id
         }
       }
@@ -834,7 +834,7 @@ locals {
   intent_slot_groups = {
     for pair in distinct([
       for item in local.intent_slot_pairs : "${item.intent_name}.${item.locale_id}"
-    ]) : pair => [
+      ]) : pair => [
       for item in local.intent_slot_pairs : item
       if "${item.intent_name}.${item.locale_id}" == pair
     ]
@@ -908,9 +908,9 @@ resource "null_resource" "update_intent" {
         --slot-priorities "${replace(jsonencode([for item in each.value : { priority = item.priority, slotId = split(",", aws_lexv2models_slot.this["${item.intent_name}.${item.locale_id}.${item.slot_name}"].id)[4] }]), "\"", "\\\"")}" \
         ${local.intent_dialog_code_hook_map[each.key] != null ? "--dialog-code-hook \"${replace(jsonencode({ enabled = local.intent_dialog_code_hook_map[each.key].enabled }), "\"", "\\\"")}\"" : ""} \
         ${local.intent_fulfillment_code_hook_map[each.key] != null ? "--fulfillment-code-hook \"${replace(jsonencode({ enabled = local.intent_fulfillment_code_hook_map[each.key].enabled, active = local.intent_fulfillment_code_hook_map[each.key].active }), "\"", "\\\"")}\"" : ""} \
-        ${local.intent_initial_response_map[each.key] != null ? "--initial-response-setting \"${replace(jsonencode({ initialResponse = { allowInterrupt = local.intent_initial_response_map[each.key].allow_interrupt, messageGroups = [for mg in local.intent_initial_response_map[each.key].message_groups : { message = { plainTextMessage = { value = mg.plain_text_message }}}]}}), "\"", "\\\"")}\"" : ""} \
-        ${local.intent_confirmation_setting_map[each.key] != null ? "--intent-confirmation-setting \"${replace(jsonencode(merge({ active = local.intent_confirmation_setting_map[each.key].active, promptSpecification = { maxRetries = local.intent_confirmation_setting_map[each.key].prompt_specification.max_retries, allowInterrupt = local.intent_confirmation_setting_map[each.key].prompt_specification.allow_interrupt, messageSelectionStrategy = local.intent_confirmation_setting_map[each.key].prompt_specification.message_selection_strategy, messageGroups = [for mg in local.intent_confirmation_setting_map[each.key].prompt_specification.message_groups : { message = { plainTextMessage = { value = mg.plain_text_message }}}]}}, local.intent_confirmation_setting_map[each.key].declination_response != null ? { declinationResponse = { allowInterrupt = local.intent_confirmation_setting_map[each.key].declination_response.allow_interrupt, messageGroups = [for mg in local.intent_confirmation_setting_map[each.key].declination_response.message_groups : { message = { plainTextMessage = { value = mg.plain_text_message }}}]}} : {})), "\"", "\\\"")}\"" : ""} \
-        ${local.intent_closing_response_map[each.key] != null ? "--intent-closing-setting \"${replace(jsonencode({ active = true, closingResponse = { allowInterrupt = local.intent_closing_response_map[each.key].allow_interrupt, messageGroups = [for mg in local.intent_closing_response_map[each.key].message_groups : { message = { plainTextMessage = { value = mg.plain_text_message }}}]}}), "\"", "\\\"")}\"" : ""} \
+        ${local.intent_initial_response_map[each.key] != null ? "--initial-response-setting \"${replace(jsonencode({ initialResponse = { allowInterrupt = local.intent_initial_response_map[each.key].allow_interrupt, messageGroups = [for mg in local.intent_initial_response_map[each.key].message_groups : { message = { plainTextMessage = { value = mg.plain_text_message } } }] } }), "\"", "\\\"")}\"" : ""} \
+        ${local.intent_confirmation_setting_map[each.key] != null ? "--intent-confirmation-setting \"${replace(jsonencode(merge({ active = local.intent_confirmation_setting_map[each.key].active, promptSpecification = { maxRetries = local.intent_confirmation_setting_map[each.key].prompt_specification.max_retries, allowInterrupt = local.intent_confirmation_setting_map[each.key].prompt_specification.allow_interrupt, messageSelectionStrategy = local.intent_confirmation_setting_map[each.key].prompt_specification.message_selection_strategy, messageGroups = [for mg in local.intent_confirmation_setting_map[each.key].prompt_specification.message_groups : { message = { plainTextMessage = { value = mg.plain_text_message } } }] } }, local.intent_confirmation_setting_map[each.key].declination_response != null ? { declinationResponse = { allowInterrupt = local.intent_confirmation_setting_map[each.key].declination_response.allow_interrupt, messageGroups = [for mg in local.intent_confirmation_setting_map[each.key].declination_response.message_groups : { message = { plainTextMessage = { value = mg.plain_text_message } } }] } } : {})), "\"", "\\\"")}\"" : ""} \
+        ${local.intent_closing_response_map[each.key] != null ? "--intent-closing-setting \"${replace(jsonencode({ active = true, closingResponse = { allowInterrupt = local.intent_closing_response_map[each.key].allow_interrupt, messageGroups = [for mg in local.intent_closing_response_map[each.key].message_groups : { message = { plainTextMessage = { value = mg.plain_text_message } } }] } }), "\"", "\\\"")}\"" : ""} \
         --input-contexts "${replace(jsonencode([for c in local.intent_input_contexts_map[each.key] : { name = c }]), "\"", "\\\"")}" \
         --output-contexts "${replace(jsonencode([for c in local.intent_output_contexts_map[each.key] : { name = c.name, timeToLiveInSeconds = c.time_to_live_in_seconds, turnsToLive = c.turns_to_live }]), "\"", "\\\"")}" \
         ${local.intent_kendra_configuration_map[each.key] != null ? "--kendra-configuration \"${replace(jsonencode({ kendraIndex = local.intent_kendra_configuration_map[each.key].kendra_index, queryFilterString = local.intent_kendra_configuration_map[each.key].query_filter_string, queryFilterStringEnabled = local.intent_kendra_configuration_map[each.key].query_filter_string_enabled }), "\"", "\\\"")}\"" : ""}
