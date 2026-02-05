@@ -922,3 +922,61 @@ resource "null_resource" "update_intent" {
     aws_lexv2models_slot.this
   ]
 }
+
+
+# Null resource to create QnA Intent via AWS CLI
+resource "null_resource" "create_qna_intent" {
+  count = var.knowledge_base_intent_enabled ? 1 : 0
+
+  triggers = {
+    bot_id              = aws_lexv2models_bot.this.id
+    knowledge_base_arn  = var.knowledge_base_intent.knowledge_base_arn
+    locale_id           = var.knowledge_base_intent.locale_id
+    intent_name         = var.knowledge_base_intent.intent_name
+    description         = var.knowledge_base_intent.description
+    settings_hash       = sha1(jsonencode(var.knowledge_base_intent))
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      aws lexv2-models create-intent \
+        --bot-id ${aws_lexv2models_bot.this.id} \
+        --bot-version DRAFT \
+        --locale-id ${var.knowledge_base_intent.locale_id} \
+        --intent-name ${var.knowledge_base_intent.intent_name} \
+        --description "${var.knowledge_base_intent.description}" \
+        --parent-intent-signature AMAZON.QnAIntent \
+        --qn-a-intent-configuration '${jsonencode({
+          dataSourceConfiguration = {
+            bedrockKnowledgeStoreConfiguration = {
+              bedrockKnowledgeBaseArn = var.knowledge_base_intent.knowledge_base_arn
+            }
+          }
+        })}'
+    EOT
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+      INTENT_ID=$(aws lexv2-models list-intents \
+        --bot-id ${self.triggers.bot_id} \
+        --bot-version DRAFT \
+        --locale-id ${self.triggers.locale_id} \
+        --query "intentSummaries[?intentName=='${self.triggers.intent_name}'].intentId" \
+        --output text)
+      
+      if [ ! -z "$INTENT_ID" ]; then
+        aws lexv2-models delete-intent \
+          --bot-id ${self.triggers.bot_id} \
+          --bot-version DRAFT \
+          --locale-id ${self.triggers.locale_id} \
+          --intent-id $INTENT_ID
+      fi
+    EOT
+  }
+
+  depends_on = [
+    aws_lexv2models_bot_locale.this
+  ]
+}

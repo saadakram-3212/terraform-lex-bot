@@ -12,6 +12,15 @@ lex_bots = {
     idle_session_ttl_in_seconds = 300
     bot_type                    = "Bot"
 
+
+    knowledge_base_intent_enabled = true
+    knowledge_base_intent = {
+      intent_name       = "FAQKnowledgeBaseIntent"
+      description        = "Intent to answer questions from a knowledge base"
+      knowledge_base_arn = "OO0FKNPMLA"
+      locale_id         = "en_US"
+    }
+
     # IAM Configuration
     iam_role_name   = "simple-faq-bot-role"
     iam_policy_arns = []
@@ -334,6 +343,7 @@ lex_bots = {
 
     # Bot members
     bot_members = []
+    knowledge_base_intent_enabled = false
 
     # Bot-specific tags
     tags = {

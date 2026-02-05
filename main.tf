@@ -40,4 +40,7 @@ module "lex_bot" {
   # Slot Types
   bot_slot_types     = each.value.bot_slot_types
   slot_type_timeouts = each.value.slot_type_timeouts
+  # Knowledge Base Intents
+  knowledge_base_intent_enabled = each.value.knowledge_base_intent_enabled
+  knowledge_base_intent = each.value.knowledge_base_intent
 }

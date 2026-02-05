@@ -460,6 +460,22 @@ variable "lex_bots" {
       }))
     })), [])
 
+    knowledge_base_intent_enabled = optional(bool, false)
+
+    # QnA Intent Configuration using Bedrock Knowledge Base
+    knowledge_base_intent = optional(object({
+      intent_name        = optional(string, "QnAIntent")
+      description        = optional(string, "Intent for handling questions using Bedrock Knowledge Base")
+      locale_id          = string
+      knowledge_base_arn = optional(string, "")
+      }), {
+      enabled            = false
+      intent_name        = "QnAIntent"
+      description        = "Intent for handling questions using Bedrock Knowledge Base"
+      locale_id          = "en_US"
+      knowledge_base_arn = ""
+    })
+
     # Tags (merged with global tags)
     tags = optional(map(string), {})
   }))
