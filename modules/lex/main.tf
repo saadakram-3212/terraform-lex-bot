@@ -925,16 +925,20 @@ resource "null_resource" "update_intent" {
 
 
 # Null resource to create QnA Intent via AWS CLI
+# Null resource to create QnA Intents via AWS CLI (supports multiple)
 resource "null_resource" "create_qna_intent" {
-  count = var.knowledge_base_intent_enabled ? 1 : 0
+  for_each = var.knowledge_base_intent_enabled ? {
+    for idx, intent in var.knowledge_base_intents : 
+    "${intent.locale_id}.${intent.intent_name}" => intent
+  } : {}
 
   triggers = {
-    bot_id              = aws_lexv2models_bot.this.id
-    knowledge_base_arn  = var.knowledge_base_intent.knowledge_base_arn
-    locale_id           = var.knowledge_base_intent.locale_id
-    intent_name         = var.knowledge_base_intent.intent_name
-    description         = var.knowledge_base_intent.description
-    settings_hash       = sha1(jsonencode(var.knowledge_base_intent))
+    bot_id             = aws_lexv2models_bot.this.id
+    knowledge_base_arn = each.value.knowledge_base_arn
+    locale_id          = each.value.locale_id
+    intent_name        = each.value.intent_name
+    description        = each.value.description
+    settings_hash      = sha1(jsonencode(each.value))
   }
 
   provisioner "local-exec" {
@@ -942,14 +946,14 @@ resource "null_resource" "create_qna_intent" {
       aws lexv2-models create-intent \
         --bot-id ${aws_lexv2models_bot.this.id} \
         --bot-version DRAFT \
-        --locale-id ${var.knowledge_base_intent.locale_id} \
-        --intent-name ${var.knowledge_base_intent.intent_name} \
-        --description "${var.knowledge_base_intent.description}" \
+        --locale-id ${each.value.locale_id} \
+        --intent-name ${each.value.intent_name} \
+        --description "${each.value.description}" \
         --parent-intent-signature AMAZON.QnAIntent \
         --qn-a-intent-configuration '${jsonencode({
           dataSourceConfiguration = {
             bedrockKnowledgeStoreConfiguration = {
-              bedrockKnowledgeBaseArn = var.knowledge_base_intent.knowledge_base_arn
+              bedrockKnowledgeBaseArn = each.value.knowledge_base_arn
             }
           }
         })}'

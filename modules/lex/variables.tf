@@ -495,18 +495,14 @@ variable "knowledge_base_intent_enabled" {
   default     = false
 }
 
-variable "knowledge_base_intent" {
-  description = "Configuration for QnA bot intent using Bedrock Knowledge Base"
-  type = object({
-    intent_name          = optional(string, "QnAIntent")
-    description          = optional(string, "Intent for handling questions using Bedrock Knowledge Base")
-    locale_id            = string
-    knowledge_base_arn   = string
-  })
-  default = {
-    intent_name          = "QnAIntent"
-    description          = "Intent for handling questions using Bedrock Knowledge Base"
-    locale_id            = "en_US"
-    knowledge_base_arn   = ""
-  }
+
+variable "knowledge_base_intents" {
+  description = "List of QnA intents using Bedrock Knowledge Base"
+  type = list(object({
+    intent_name        = string
+    description        = optional(string, "Intent for handling questions using Bedrock Knowledge Base")
+    locale_id          = string
+    knowledge_base_arn = string
+  }))
+  default = []
 }

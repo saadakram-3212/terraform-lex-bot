@@ -14,12 +14,18 @@ lex_bots = {
 
 
     knowledge_base_intent_enabled = true
-    knowledge_base_intent = {
+    knowledge_base_intents = [{
       intent_name       = "FAQKnowledgeBaseIntent"
       description        = "Intent to answer questions from a knowledge base"
       knowledge_base_arn = "OO0FKNPMLA"
       locale_id         = "en_US"
-    }
+    },
+    {
+      intent_name       = "GeneralQnAIntent"
+      description        = "Intent to answer general questions using Bedrock Knowledge Base"
+      knowledge_base_arn = "OO0FKNPMLB"
+      locale_id         = "en_US"
+    }]
 
     # IAM Configuration
     iam_role_name   = "simple-faq-bot-role"
