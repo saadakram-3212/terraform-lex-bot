@@ -9,10 +9,10 @@ variable "lex_bots" {
   type = map(object({
     # Basic bot configuration
     bot_name                    = string
-    bot_description             = optional(string, "")
-    child_directed              = optional(bool, false)
-    idle_session_ttl_in_seconds = optional(number, 600)
-    bot_type                    = optional(string, "Bot")
+    bot_description             = optional(string)
+    child_directed              = optional(bool)
+    idle_session_ttl_in_seconds = optional(number)
+    bot_type                    = optional(string)
 
 
     
@@ -27,34 +27,30 @@ variable "lex_bots" {
     
     bot_locales = optional(list(object({
       locale_id                        = string
-      bot_version                      = optional(string, "DRAFT")
+      bot_version                      = optional(string)
       n_lu_intent_confidence_threshold = number
-      description                      = optional(string, "")
+      description                      = optional(string)
       voice_settings = optional(object({
         voice_id = string
-        engine   = optional(string, "standard")
+        engine   = optional(string)
       }), null)
     })), [])
 
     
     locale_timeouts = optional(object({
-      create = optional(string, "30m")
-      update = optional(string, "30m")
-      delete = optional(string, "30m")
-      }), {
-      create = "30m"
-      update = "30m"
-      delete = "30m"
-    })
+      create = optional(string)
+      update = optional(string)
+      delete = optional(string)
+      }))
 
     # Intents
     bot_intents = optional(list(object({
       name                    = string
-      bot_version             = optional(string, "DRAFT")
+      bot_version             = optional(string)
       locale_id               = string
-      description             = optional(string, "")
-      sample_utterances       = optional(list(string), [])
-      parent_intent_signature = optional(string, null)
+      description             = optional(string)
+      sample_utterances       = optional(list(string))
+      parent_intent_signature = optional(string)
 
       initial_response_setting = optional(object({
         initial_response = optional(object({
@@ -78,21 +74,21 @@ variable "lex_bots" {
             message_groups = list(object({
               plain_text_message = string
             }))
-          }), null)
-        }), null)
-      }), null)
+          }))
+        }))
+      }))
 
       confirmation_setting = optional(object({
         active = optional(bool, true)
         prompt_specification = object({
           max_retries                = number
-          allow_interrupt            = optional(bool, false)
-          message_selection_strategy = optional(string, "Ordered")
+          allow_interrupt            = optional(bool)
+          message_selection_strategy = optional(string)
           message_groups = list(object({
             plain_text_message = string
           }))
           prompt_attempts_specification = optional(list(object({
-            allow_interrupt = optional(bool, true)
+            allow_interrupt = optional(bool)
             map_block_key   = string
             allowed_input_types = object({
               allow_audio_input = bool
@@ -117,7 +113,7 @@ variable "lex_bots" {
           })), [])
         })
         declination_response = optional(object({
-          allow_interrupt = optional(bool, false)
+          allow_interrupt = optional(bool)
           message_groups = list(object({
             plain_text_message = string
           }))
@@ -125,14 +121,14 @@ variable "lex_bots" {
       }), null)
 
       closing_setting = optional(object({
-        active = optional(bool, true)
+        active = optional(bool)
         closing_response = optional(object({
-          allow_interrupt = optional(bool, false)
+          allow_interrupt = optional(bool)
           message_groups = list(object({
             plain_text_message = string
           }))
-        }), null)
-      }), null)
+        }))
+      }))
 
       input_contexts = optional(list(string), [])
 
@@ -144,36 +140,32 @@ variable "lex_bots" {
 
       kendra_configuration = optional(object({
         kendra_index                = string
-        query_filter_string         = optional(string, null)
-        query_filter_string_enabled = optional(bool, false)
-      }), null)
-    })), [])
+        query_filter_string         = optional(string)
+        query_filter_string_enabled = optional(bool)
+      }))
+    })))
 
     intent_timeouts = optional(object({
-      create = optional(string, "30m")
-      update = optional(string, "30m")
-      delete = optional(string, "30m")
-      }), {
-      create = "30m"
-      update = "30m"
-      delete = "30m"
-    })
+      create = optional(string)
+      update = optional(string)
+      delete = optional(string)
+      }))
 
     # Slots
     bot_slots = optional(list(object({
       name         = string
       intent_name  = string
       locale_id    = string
-      bot_version  = optional(string, "DRAFT")
-      description  = optional(string, "")
-      slot_type_id = optional(string, null)
-      priority     = optional(number, 1)
+      bot_version  = optional(string)
+      description  = optional(string)
+      slot_type_id = optional(string)
+      priority     = optional(number)
 
       allow_multiple_values = optional(bool, false)
 
       obfuscation_setting = optional(object({
-        obfuscation_setting_type = optional(string, "DefaultObfuscation")
-      }), null)
+        obfuscation_setting_type = optional(string)
+      }))
 
       value_elicitation_setting = object({
         slot_constraint = string
@@ -181,221 +173,199 @@ variable "lex_bots" {
         default_value_specification = optional(object({
           default_value_list = optional(list(object({
             default_value = string
-          })), [])
-        }), null)
+          })))
+        }))
 
         prompt_specification = optional(object({
-          allow_interrupt            = optional(bool, true)
-          max_retries                = optional(number, 3)
-          message_selection_strategy = optional(string, "Random")
+          allow_interrupt            = optional(bool)
+          max_retries                = optional(number)
+          message_selection_strategy = optional(string)
 
           message_groups = optional(list(object({
             plain_text_message = string
           })), [])
 
           prompt_attempts_specification = optional(list(object({
-            allow_interrupt = optional(bool, true)
+            allow_interrupt = optional(bool)
             map_block_key   = string
 
             allowed_input_types = optional(object({
-              allow_audio_input = optional(bool, true)
-              allow_dtmf_input  = optional(bool, false)
+              allow_audio_input = optional(bool)
+              allow_dtmf_input  = optional(bool)
               }), {
               allow_audio_input = true
               allow_dtmf_input  = false
             })
 
             audio_and_dtmf_input_specification = optional(object({
-              start_timeout_ms = optional(number, 4000)
+              start_timeout_ms = optional(number)
 
               audio_specification = optional(object({
-                end_timeout_ms = optional(number, 640)
-                max_length_ms  = optional(number, 15000)
-                }), {
-                end_timeout_ms = 640
-                max_length_ms  = 15000
-              })
+                end_timeout_ms = optional(number)
+                max_length_ms  = optional(number)
+                }))
 
               dtmf_specification = optional(object({
-                deletion_character = optional(string, "*")
-                end_character      = optional(string, "#")
-                end_timeout_ms     = optional(number, 5000)
-                max_length         = optional(number, 513)
-                }), {
-                deletion_character = "*"
-                end_character      = "#"
-                end_timeout_ms     = 5000
-                max_length         = 513
-              })
-            }), null)
+                deletion_character = optional(string)
+                end_character      = optional(string)
+                end_timeout_ms     = optional(number)
+                max_length         = optional(number)
+                }))
+            }))
 
             text_input_specification = optional(object({
-              start_timeout_ms = optional(number, 30000)
-            }), null)
-          })), [])
-        }), null)
+              start_timeout_ms = optional(number)
+            }))
+          })))
+        }))
 
         sample_utterances = optional(list(object({
           utterance = string
-        })), [])
+        })))
 
         slot_resolution_setting = optional(object({
-          slot_resolution_strategy = optional(string, "Default")
-        }), null)
+          slot_resolution_strategy = optional(string)
+        }))
 
         wait_and_continue_specification = optional(object({
-          active = optional(bool, true)
+          active = optional(bool)
 
           continue_response = optional(object({
-            allow_interrupt = optional(bool, false)
+            allow_interrupt = optional(bool)
             message_groups = optional(list(object({
               plain_text_message = string
-            })), [])
-          }), null)
+            })))
+          }))
 
           waiting_response = optional(object({
-            allow_interrupt = optional(bool, false)
+            allow_interrupt = optional(bool)
             message_groups = optional(list(object({
               plain_text_message = string
-            })), [])
-          }), null)
+            })))
+          }))
 
           still_waiting_response = optional(object({
             frequency_in_seconds = number
             timeout_in_seconds   = number
-            allow_interrupt      = optional(bool, false)
+            allow_interrupt      = optional(bool)
             message_groups = optional(list(object({
               plain_text_message = string
-            })), [])
-          }), null)
-        }), null)
+            })))
+          }))
+        }))
       })
 
       sub_slot_setting = optional(object({
-        expression = optional(string, null)
+        expression = optional(string)
 
         slot_specification = optional(map(object({
           slot_type_id = string
 
           value_elicitation_setting = optional(object({
-            slot_constraint = optional(string, "Required")
+            slot_constraint = optional(string)
 
             default_value_specification = optional(object({
               default_value_list = optional(list(object({
                 default_value = string
-              })), [])
-            }), null)
+              })))
+            }))
 
             prompt_specification = optional(object({
-              allow_interrupt            = optional(bool, true)
-              max_retries                = optional(number, 3)
-              message_selection_strategy = optional(string, "Random")
+              allow_interrupt            = optional(bool)
+              max_retries                = optional(number)
+              message_selection_strategy = optional(string)
 
               message_groups = optional(list(object({
                 plain_text_message = string
-              })), [])
+              })))
 
               prompt_attempts_specification = optional(list(object({
-                allow_interrupt = optional(bool, true)
+                allow_interrupt = optional(bool)
                 map_block_key   = string
 
                 allowed_input_types = optional(object({
-                  allow_audio_input = optional(bool, true)
-                  allow_dtmf_input  = optional(bool, false)
+                  allow_audio_input = optional(bool)
+                  allow_dtmf_input  = optional(bool)
                   }), {
                   allow_audio_input = true
                   allow_dtmf_input  = false
                 })
 
                 audio_and_dtmf_input_specification = optional(object({
-                  start_timeout_ms = optional(number, 4000)
+                  start_timeout_ms = optional(number)
 
                   audio_specification = optional(object({
-                    end_timeout_ms = optional(number, 640)
-                    max_length_ms  = optional(number, 15000)
-                    }), {
-                    end_timeout_ms = 640
-                    max_length_ms  = 15000
-                  })
+                    end_timeout_ms = optional(number)
+                    max_length_ms  = optional(number)
+                    }))
 
                   dtmf_specification = optional(object({
-                    deletion_character = optional(string, "*")
-                    end_character      = optional(string, "#")
-                    end_timeout_ms     = optional(number, 5000)
-                    max_length         = optional(number, 513)
-                    }), {
-                    deletion_character = "*"
-                    end_character      = "#"
-                    end_timeout_ms     = 5000
-                    max_length         = 513
-                  })
-                }), null)
+                    deletion_character = optional(string)
+                    end_character      = optional(string)
+                    end_timeout_ms     = optional(number)
+                    max_length         = optional(number)
+                    }))
+                }))
 
                 text_input_specification = optional(object({
-                  start_timeout_ms = optional(number, 30000)
-                }), null)
-              })), [])
-            }), null)
+                  start_timeout_ms = optional(number)
+                }))
+              })))
+            }))
 
             sample_utterances = optional(list(object({
               utterance = string
-            })), [])
+            })))
 
             slot_resolution_setting = optional(object({
-              slot_resolution_strategy = optional(string, "Default")
-            }), null)
+              slot_resolution_strategy = optional(string)
+            }))
 
             wait_and_continue_specification = optional(object({
-              active = optional(bool, true)
+              active = optional(bool)
 
               continue_response = optional(object({
-                allow_interrupt = optional(bool, false)
+                allow_interrupt = optional(bool)
                 message_groups = optional(list(object({
                   plain_text_message = string
-                })), [])
-              }), null)
+                })))
+              }))
 
               waiting_response = optional(object({
-                allow_interrupt = optional(bool, false)
+                allow_interrupt = optional(bool)
                 message_groups = optional(list(object({
                   plain_text_message = string
-                })), [])
-              }), null)
+                })))
+              }))
 
               still_waiting_response = optional(object({
                 frequency_in_seconds = number
                 timeout_in_seconds   = number
-                allow_interrupt      = optional(bool, false)
+                allow_interrupt      = optional(bool)
                 message_groups = optional(list(object({
                   plain_text_message = string
-                })), [])
-              }), null)
-            }), null)
-            }), {
-            slot_constraint = "Required"
-          })
-        })), {})
-      }), null)
-    })), [])
+                })))
+              }))
+            }))
+            }))
+        })))
+      }))
+    })))
 
     slot_timeouts = optional(object({
-      create = optional(string, "30m")
-      update = optional(string, "30m")
-      delete = optional(string, "30m")
-      }), {
-      create = "30m"
-      update = "30m"
-      delete = "30m"
-    })
+      create = optional(string)
+      update = optional(string)
+      delete = optional(string)
+      }))
 
     # Slot Types
     bot_slot_types = optional(list(object({
       name        = string
       locale_id   = string
-      bot_version = optional(string, "DRAFT")
-      description = optional(string, "")
+      bot_version = optional(string)
+      description = optional(string)
 
-      parent_slot_type_signature = optional(string, null)
+      parent_slot_type_signature = optional(string)
 
       slot_type_values = optional(list(object({
         sample_value = object({
@@ -403,87 +373,80 @@ variable "lex_bots" {
         })
         synonyms = optional(list(object({
           value = string
-        })), [])
-      })), [])
+        })))
+      })))
 
       value_selection_setting = optional(object({
-        resolution_strategy = optional(string, "OriginalValue")
+        resolution_strategy = optional(string)
 
         advanced_recognition_setting = optional(object({
-          audio_recognition_strategy = optional(string, null)
-        }), null)
+          audio_recognition_strategy = optional(string)
+        }))
 
         regex_filter = optional(object({
           pattern = string
-        }), null)
-        }), {
-        resolution_strategy = "OriginalValue"
-      })
+        }))
+        }))
 
       composite_slot_type_setting = optional(object({
         sub_slots = optional(list(object({
           name         = string
           slot_type_id = string
-        })), [])
-      }), null)
+        })))
+      }))
 
       external_source_setting = optional(object({
         grammar_slot_type_setting = optional(object({
           source = optional(object({
             s3_bucket_name = string
             s3_object_key  = string
-            kms_key_arn    = optional(string, null)
-          }), null)
-        }), null)
-      }), null)
-    })), [])
+            kms_key_arn    = optional(string)
+          }))
+        }))
+      }))
+    })))
 
     slot_type_timeouts = optional(object({
-      create = optional(string, "30m")
-      update = optional(string, "30m")
-      delete = optional(string, "30m")
-      }), {
-      create = "30m"
-      update = "30m"
-      delete = "30m"
-    })
+      create = optional(string)
+      update = optional(string)
+      delete = optional(string)
+      }))
 
     # Bot Versions
     bot_versions = optional(list(object({
       version_name = string
-      description  = optional(string, "")
+      description  = optional(string)
       locale_specification = map(object({
         source_bot_version = string
       }))
-    })), [])
+    })))
 
-    knowledge_base_intent_enabled = optional(bool, false)
+    knowledge_base_intent_enabled = optional(bool)
 
     # QnA Intent Configuration using Bedrock Knowledge Base
     # VARIABLE NAMES SHOULD NOT BE CHANGED
 knowledge_base_intents = optional(list(object({
   intent_name       = string
-  description       = optional(string, "")
+  description       = optional(string)
   knowledge_base_arn = string
   locale_id         = string
   modelArn = string
-  sample_utterances = optional(list(string), [])
+  sample_utterances = optional(list(string))
   intent_closing_setting = optional(object({
-    active = optional(bool, true)
+    active = optional(bool)
     closingResponse = optional(object({  
-      allowInterrupt = optional(bool, false)
+      allowInterrupt = optional(bool)
       messageGroups = optional(list(object({
         message = object({
           plainTextMessage = optional(object({
             value = string
-          }), null)
+          }))
         })
-      })), [])
-    }), null)
-  }), null)
-})), [])
-    # Tags (merged with global tags)
-    tags = optional(map(string), {})
+      })))
+    }))
   }))
-  default = {}
+})))
+    # Tags (merged with global tags)
+    tags = optional(map(string))
+  }))
 }
