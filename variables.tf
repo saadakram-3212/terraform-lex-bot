@@ -465,6 +465,7 @@ variable "lex_bots" {
       description        = optional(string)
       locale_id          = string
       knowledge_base_arn = optional(string)
+      sample_utterances  = optional(list(string))
       })))
 
     # Tags (merged with global tags)

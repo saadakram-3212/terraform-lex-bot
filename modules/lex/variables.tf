@@ -497,6 +497,7 @@ variable "knowledge_base_intents" {
     description        = optional(string, "Intent for handling questions using Bedrock Knowledge Base")
     locale_id          = string
     knowledge_base_arn = string
+    sample_utterances  = optional(list(string), [])
   }))
   default = []
 }

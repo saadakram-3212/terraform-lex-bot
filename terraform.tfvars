@@ -17,13 +17,16 @@ lex_bots = {
     knowledge_base_intents = [{
       intent_name       = "FAQKnowledgeBaseIntent"
       description        = "Intent to answer questions from a knowledge base"
-      knowledge_base_arn = "OO0FKNPMLA"
+      knowledge_base_arn = "TOMBCJIKYO"
       locale_id         = "en_US"
+      sample_utterances = [
+        "This is just a test utterance"
+      ]
     },
     {
       intent_name       = "GeneralQnAIntent"
       description        = "Intent to answer general questions using Bedrock Knowledge Base"
-      knowledge_base_arn = "OO0FKNPMLB"
+      knowledge_base_arn = "TOMBCJIKYO"
       locale_id         = "en_US"
     }]
 

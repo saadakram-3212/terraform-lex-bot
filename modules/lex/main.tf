@@ -914,6 +914,7 @@ resource "null_resource" "create_qna_intent" {
         --intent-name ${each.value.intent_name} \
         --description "${each.value.description}" \
         --parent-intent-signature AMAZON.QnAIntent \
+        ${length(lookup(each.value, "sample_utterances", [])) > 0 ? "--sample-utterances '${jsonencode([for utterance in each.value.sample_utterances : { utterance = utterance }])}'" : ""} \
         --qn-a-intent-configuration '${jsonencode({
           dataSourceConfiguration = {
             bedrockKnowledgeStoreConfiguration = {
