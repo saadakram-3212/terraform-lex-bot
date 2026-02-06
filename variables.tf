@@ -14,9 +14,6 @@ variable "lex_bots" {
     idle_session_ttl_in_seconds = optional(number, 600)
     bot_type                    = optional(string, "Bot")
 
-    # IAM Configuration
-    iam_role_name   = optional(string, "")
-    iam_policy_arns = optional(list(string), [])
 
     # Bot members
     bot_members = optional(list(object({

@@ -23,21 +23,6 @@ output "lex_bot_name" {
   }
 }
 
-output "lex_bot_iam_role_arn" {
-  description = "Map of bot names to their IAM role ARNs"
-  value = {
-    for key, bot in module.lex_bot :
-    key => bot.iam_role_arn
-  }
-}
-
-output "lex_bot_iam_role_name" {
-  description = "Map of bot names to their IAM role names"
-  value = {
-    for key, bot in module.lex_bot :
-    key => bot.iam_role_name
-  }
-}
 
 output "lex_bot_locales" {
   description = "Map of bot names to their locales"

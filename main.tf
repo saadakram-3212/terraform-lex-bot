@@ -10,10 +10,8 @@ module "lex_bot" {
   child_directed              = each.value.child_directed
   idle_session_ttl_in_seconds = each.value.idle_session_ttl_in_seconds
   bot_type                    = each.value.bot_type
-
+  role_arn                    = aws_iam_role.lexv2_service_role.arn
   # IAM Configuration
-  iam_role_name   = each.value.iam_role_name
-  iam_policy_arns = each.value.iam_policy_arns
 
   # Bot members
   bot_members = each.value.bot_members
@@ -43,4 +41,27 @@ module "lex_bot" {
   # Knowledge Base Intents
   knowledge_base_intent_enabled = each.value.knowledge_base_intent_enabled
   knowledge_base_intents = each.value.knowledge_base_intents
+}
+
+resource "aws_iam_role" "lexv2_service_role" {
+  name = "lexv2-service-role-test"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "LexV2AssumeRole"
+        Effect = "Allow"
+        Principal = {
+          Service = "lexv2.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "bedrock_full_access" {
+  role       = aws_iam_role.lexv2_service_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonBedrockFullAccess"
 }

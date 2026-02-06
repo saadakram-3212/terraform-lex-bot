@@ -27,9 +27,6 @@ lex_bots = {
       locale_id         = "en_US"
     }]
 
-    # IAM Configuration
-    iam_role_name   = "simple-faq-bot-role"
-    iam_policy_arns = []
 
     # Bot members
     bot_members = []
@@ -343,9 +340,7 @@ lex_bots = {
     idle_session_ttl_in_seconds = 600
     bot_type                    = "Bot"
 
-    # IAM Configuration
-    iam_role_name   = "travelbot2-role"
-    iam_policy_arns = []
+
 
     # Bot members
     bot_members = []

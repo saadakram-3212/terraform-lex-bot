@@ -1,38 +1,3 @@
-# IAM Role for Lex Bot
-resource "aws_iam_role" "lex_bot" {
-  name        = var.iam_role_name != "" ? var.iam_role_name : "${var.bot_name}-role"
-  description = "IAM role for Lex bot ${var.bot_name}"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "lexv2.amazonaws.com"
-        }
-      },
-    ]
-  })
-
-  tags = merge(
-    var.tags,
-    {
-      Name      = var.iam_role_name != "" ? var.iam_role_name : "${var.bot_name}-role"
-      ManagedBy = "Terraform"
-    }
-  )
-}
-
-# IAM Policy for Lex Bot (optional - attach policies as needed)
-resource "aws_iam_role_policy_attachment" "lex_bot_policy" {
-  for_each = toset(var.iam_policy_arns)
-
-  role       = aws_iam_role.lex_bot.name
-  policy_arn = each.value
-}
 
 # Lex V2 Bot
 resource "aws_lexv2models_bot" "this" {
@@ -44,7 +9,7 @@ resource "aws_lexv2models_bot" "this" {
   }
 
   idle_session_ttl_in_seconds = var.idle_session_ttl_in_seconds
-  role_arn                    = aws_iam_role.lex_bot.arn
+  role_arn                    = var.role_arn
   type                        = var.bot_type
 
   tags = merge(
@@ -924,7 +889,6 @@ resource "null_resource" "update_intent" {
 }
 
 
-# Null resource to create QnA Intent via AWS CLI
 # Null resource to create QnA Intents via AWS CLI (supports multiple)
 resource "null_resource" "create_qna_intent" {
   for_each = var.knowledge_base_intent_enabled ? {

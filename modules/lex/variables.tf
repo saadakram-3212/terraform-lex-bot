@@ -9,6 +9,11 @@ variable "bot_description" {
   default     = ""
 }
 
+variable "role_arn" {
+  type        = string
+  description = "ARN of the IAM role for the Lex bot"
+}
+
 variable "child_directed" {
   type        = bool
   description = "Whether the bot is directed at children"
@@ -27,17 +32,6 @@ variable "bot_type" {
   default     = "Bot"
 }
 
-variable "iam_role_name" {
-  type        = string
-  description = "Custom IAM role name for the Lex bot"
-  default     = ""
-}
-
-variable "iam_policy_arns" {
-  type        = list(string)
-  description = "List of IAM policy ARNs to attach to the Lex bot role"
-  default     = []
-}
 
 variable "tags" {
   type        = map(string)
