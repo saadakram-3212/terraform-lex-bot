@@ -15,7 +15,7 @@ variable "lex_bots" {
     bot_type                    = optional(string, "Bot")
 
 
-    # Bot members
+    
     bot_members = optional(list(object({
       alias_id   = string
       alias_name = string
@@ -24,7 +24,7 @@ variable "lex_bots" {
       version    = string
     })), [])
 
-    # Locales
+    
     bot_locales = optional(list(object({
       locale_id                        = string
       bot_version                      = optional(string, "DRAFT")
@@ -36,7 +36,7 @@ variable "lex_bots" {
       }), null)
     })), [])
 
-    # Timeouts
+    
     locale_timeouts = optional(object({
       create = optional(string, "30m")
       update = optional(string, "30m")
