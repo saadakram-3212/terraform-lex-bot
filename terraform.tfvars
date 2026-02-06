@@ -15,9 +15,10 @@ lex_bots = {
   knowledge_base_arn = "TOMBCJIKYO"
   locale_id         = "en_US"
   sample_utterances = ["This is just a test utterance"]
+  modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
   intent_closing_setting = {
     active = true
-    closingResponse = {  # Keeping your exact spelling "closingRespone"
+    closingResponse = {  
       allowInterrupt = false
       messageGroups = [
         {
@@ -36,11 +37,12 @@ lex_bots = {
         description       = "Intent to answer general questions using Bedrock Knowledge Base"
         knowledge_base_arn = "TOMBCJIKYO"
         locale_id         = "en_US"
-        sample_utterances = []  # Explicitly empty array
-        intent_closing_setting = null  # Explicitly null
+        sample_utterances = ["Which Items can I expense"]  
+        intent_closing_setting = null 
+        modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
       }
     ]
-    # Bot members
+   
     bot_members = []
     # Bot-specific tags
     tags = {
@@ -48,7 +50,7 @@ lex_bots = {
       Complexity  = "simple"
       Category    = "general-support"
     }
-    # Single English locale (simplified)
+    
     bot_locales = [
       {
         locale_id                        = "en_US"
@@ -61,7 +63,7 @@ lex_bots = {
         }
       }
     ]
-    # Locale timeouts
+    
     locale_timeouts = {
       create = "30m"
       update = "30m"
@@ -284,13 +286,13 @@ lex_bots = {
         external_source_setting     = null
       }
     ]
-    # Slot type timeouts
+    
     slot_type_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-    # bot version
+   
     bot_versions = [
       {
         version_name = "v1"
@@ -306,24 +308,24 @@ lex_bots = {
 
   # Bot 2: Travel Bot
   travel_bot = {
-    # Basic bot configuration
+    
     bot_name                    = "travelbot2"
     bot_description             = "Travel assistance bot for booking and inquiries"
     child_directed              = false
     idle_session_ttl_in_seconds = 600
     bot_type                    = "Bot"
-    # Bot members
+   
     bot_members = []
     knowledge_base_intent_enabled = false
-    knowledge_base_intents = []  # Explicitly set to empty array
+    knowledge_base_intents = []  
     
-    # Bot-specific tags
+    
     tags = {
       Application = "travel"
       Complexity  = "advanced"
       Category    = "travel-services"
     }
-    # Single English locale for travel bot
+    
     bot_locales = [
       {
         locale_id                        = "en_US"
@@ -336,13 +338,13 @@ lex_bots = {
         }
       }
     ]
-    # Locale timeouts
+    
     locale_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-    # Travel bot intents (5 intents as requested)
+    
     bot_intents = [
       # Intent 1: QnAbotIntent
       {
@@ -587,7 +589,7 @@ lex_bots = {
         parent_intent_signature = null
       }
     ]
-    # Intent timeouts
+    
     intent_timeouts = {
       create = "30m"
       update = "30m"
@@ -595,7 +597,7 @@ lex_bots = {
     }
     # Slots for travel bot
     bot_slots = [
-      # Slot for BookTickets intent
+      
       {
         name         = "Destination"
         intent_name  = "BookTickets"
@@ -639,7 +641,7 @@ lex_bots = {
         }
         sub_slot_setting = null
       },
-      # Slot for BookTickets intent - Travel Date
+      
       {
         name         = "TravelDate"
         intent_name  = "BookTickets"
@@ -673,7 +675,7 @@ lex_bots = {
         }
         sub_slot_setting = null
       },
-      # Slot for GetDepartureLocations intent
+      
       {
         name         = "DepartureCity"
         intent_name  = "GetDepartureLocations"
@@ -705,7 +707,7 @@ lex_bots = {
         sub_slot_setting = null
       }
     ]
-    # Slot timeouts
+    
     slot_timeouts = {
       create = "30m"
       update = "30m"
@@ -760,13 +762,13 @@ lex_bots = {
         external_source_setting     = null
       }
     ]
-    # Slot type timeouts
+    
     slot_type_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-    # Bot versions for travel bot
+    
     bot_versions = [
       {
         version_name = "v1"

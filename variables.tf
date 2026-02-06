@@ -460,15 +460,17 @@ variable "lex_bots" {
     knowledge_base_intent_enabled = optional(bool, false)
 
     # QnA Intent Configuration using Bedrock Knowledge Base
+    # VARIABLE NAMES SHOULD NOT BE CHANGED
 knowledge_base_intents = optional(list(object({
   intent_name       = string
   description       = optional(string, "")
   knowledge_base_arn = string
   locale_id         = string
+  modelArn = string
   sample_utterances = optional(list(string), [])
   intent_closing_setting = optional(object({
     active = optional(bool, true)
-    closingResponse = optional(object({  # Note: You wrote "closingRespone" (missing 's' in Response)
+    closingResponse = optional(object({  
       allowInterrupt = optional(bool, false)
       messageGroups = optional(list(object({
         message = object({

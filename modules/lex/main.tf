@@ -889,7 +889,7 @@ resource "null_resource" "update_intent" {
 }
 
 
-# Null resource to create QnA Intents via AWS CLI (supports multiple)
+# Null resource to create QnA Intents via AWS CLI 
 resource "null_resource" "create_qna_intent" {
   for_each = var.knowledge_base_intent_enabled ? {
     for idx, intent in var.knowledge_base_intents : 
@@ -917,11 +917,14 @@ resource "null_resource" "create_qna_intent" {
         ${lookup(each.value, "intent_closing_setting", null) != null ? "--intent-closing-setting '${jsonencode(each.value.intent_closing_setting)}'" : ""} \
         ${length(lookup(each.value, "sample_utterances", [])) > 0 ? "--sample-utterances '${jsonencode([for utterance in each.value.sample_utterances : { utterance = utterance }])}'" : ""} \
         --qn-a-intent-configuration '${jsonencode({
-          dataSourceConfiguration = {
-            bedrockKnowledgeStoreConfiguration = {
-              bedrockKnowledgeBaseArn = each.value.knowledge_base_arn
-            }
-          }
+      dataSourceConfiguration = {
+        bedrockKnowledgeStoreConfiguration = {
+          bedrockKnowledgeBaseArn = each.value.knowledge_base_arn
+        }
+      }
+      bedrockModelConfiguration = {
+        modelArn = each.value.modelArn
+      }
         })}'
     EOT
   }

@@ -499,7 +499,7 @@ variable "knowledge_base_intents" {
     knowledge_base_arn = string
     sample_utterances  = optional(list(string), [])
     intent_closing_setting = optional(any)
-
+    modelArn = string
   }))
   default = []
 }
