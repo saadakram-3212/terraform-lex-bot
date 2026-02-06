@@ -1,7 +1,3 @@
-# AWS Configuration
-aws_region = "us-east-1"
-
-# Multiple Lex Bots Configuration
 lex_bots = {
   # Bot 1: Simple FAQ Bot
   simple_faq_bot = {
@@ -11,36 +7,47 @@ lex_bots = {
     child_directed              = false
     idle_session_ttl_in_seconds = 300
     bot_type                    = "Bot"
-
-
     knowledge_base_intent_enabled = true
-    knowledge_base_intents = [{
-      intent_name       = "FAQKnowledgeBaseIntent"
-      description        = "Intent to answer questions from a knowledge base"
-      knowledge_base_arn = "TOMBCJIKYO"
-      locale_id         = "en_US"
-      sample_utterances = [
-        "This is just a test utterance"
+    knowledge_base_intents = [
+{
+  intent_name       = "FAQKnowledgeBaseIntent"
+  description       = "Intent to answer questions from a knowledge base"
+  knowledge_base_arn = "TOMBCJIKYO"
+  locale_id         = "en_US"
+  sample_utterances = ["This is just a test utterance"]
+  intent_closing_setting = {
+    active = true
+    closingResponse = {  # Keeping your exact spelling "closingRespone"
+      allowInterrupt = false
+      messageGroups = [
+        {
+          message = {
+            plainTextMessage = {
+              value = "Anything else?"
+            }
+          }
+        }
       ]
-    },
-    {
-      intent_name       = "GeneralQnAIntent"
-      description        = "Intent to answer general questions using Bedrock Knowledge Base"
-      knowledge_base_arn = "TOMBCJIKYO"
-      locale_id         = "en_US"
-    }]
-
-
+    }
+  }
+},
+      {
+        intent_name       = "GeneralQnAIntent"
+        description       = "Intent to answer general questions using Bedrock Knowledge Base"
+        knowledge_base_arn = "TOMBCJIKYO"
+        locale_id         = "en_US"
+        sample_utterances = []  # Explicitly empty array
+        intent_closing_setting = null  # Explicitly null
+      }
+    ]
     # Bot members
     bot_members = []
-
     # Bot-specific tags
     tags = {
       Application = "faq"
       Complexity  = "simple"
       Category    = "general-support"
     }
-
     # Single English locale (simplified)
     bot_locales = [
       {
@@ -54,14 +61,12 @@ lex_bots = {
         }
       }
     ]
-
     # Locale timeouts
     locale_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-
     bot_intents = [
       # Intent 1: Greeting
       {
@@ -75,7 +80,6 @@ lex_bots = {
           "Good morning",
           "Good afternoon"
         ]
-
         initial_response_setting = {
           initial_response = {
             allow_interrupt = true
@@ -86,16 +90,12 @@ lex_bots = {
             ]
           }
         }
-
         dialog_code_hook = null
-
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-
         confirmation_setting = null
-
         closing_setting = {
           active = true
           closing_response = {
@@ -107,13 +107,11 @@ lex_bots = {
             ]
           }
         }
-
         input_contexts          = []
         output_contexts         = []
         kendra_configuration    = null
         parent_intent_signature = null
       },
-
       # Intent 2: AskQuestion
       {
         name        = "AskQuestion"
@@ -126,7 +124,6 @@ lex_bots = {
           "I need assistance",
           "Can you answer something?"
         ]
-
         initial_response_setting = {
           initial_response = {
             allow_interrupt = true
@@ -137,16 +134,12 @@ lex_bots = {
             ]
           }
         }
-
         dialog_code_hook = null
-
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-
         confirmation_setting = null
-
         closing_setting = {
           active = true
           closing_response = {
@@ -158,21 +151,18 @@ lex_bots = {
             ]
           }
         }
-
         input_contexts          = []
         output_contexts         = []
         kendra_configuration    = null
         parent_intent_signature = null
       }
     ]
-
     # Intent timeouts
     intent_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-
     bot_slots = [
       {
         name         = "QuestionTopic"
@@ -182,21 +172,16 @@ lex_bots = {
         description  = "Slot to capture the question topic"
         slot_type_id = "AMAZON.AlphaNumeric"
         priority     = 1
-
         allow_multiple_values = false
-
         obfuscation_setting = {
           obfuscation_setting_type = "DefaultObfuscation"
         }
-
         value_elicitation_setting = {
           slot_constraint = "Required"
-
           prompt_specification = {
             allow_interrupt            = true
             max_retries                = 2
             message_selection_strategy = "Random"
-
             message_groups = [
               {
                 plain_text_message = "What topic would you like to ask about?"
@@ -205,7 +190,6 @@ lex_bots = {
                 plain_text_message = "Please tell me what topic your question is about."
               }
             ]
-
             prompt_attempts_specification = [
               {
                 allow_interrupt = true
@@ -214,7 +198,6 @@ lex_bots = {
                   allow_audio_input = true
                   allow_dtmf_input  = false
                 }
-
                 audio_and_dtmf_input_specification = {
                   start_timeout_ms = 4000
                   audio_specification = {
@@ -228,14 +211,12 @@ lex_bots = {
                     max_length         = 513
                   }
                 }
-
                 text_input_specification = {
                   start_timeout_ms = 30000
                 }
               }
             ]
           }
-
           sample_utterances = [
             {
               utterance = "hours"
@@ -250,25 +231,20 @@ lex_bots = {
               utterance = "account"
             }
           ]
-
           slot_resolution_setting = {
             slot_resolution_strategy = "Default"
           }
-
           wait_and_continue_specification = null
         }
-
         sub_slot_setting = null
       }
     ]
-
     # Slot timeouts
     slot_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-
     #custom slot type
     bot_slot_types = [
       {
@@ -276,9 +252,7 @@ lex_bots = {
         locale_id   = "en_US"
         bot_version = "DRAFT"
         description = "Custom slot type for question topics"
-
         parent_slot_type_signature = null
-
         slot_type_values = [
           {
             sample_value = {
@@ -301,25 +275,21 @@ lex_bots = {
             ]
           }
         ]
-
         value_selection_setting = {
           resolution_strategy          = "TopResolution"
           advanced_recognition_setting = null
           regex_filter                 = null
         }
-
         composite_slot_type_setting = null
         external_source_setting     = null
       }
     ]
-
     # Slot type timeouts
     slot_type_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-
     # bot version
     bot_versions = [
       {
@@ -342,20 +312,17 @@ lex_bots = {
     child_directed              = false
     idle_session_ttl_in_seconds = 600
     bot_type                    = "Bot"
-
-
-
     # Bot members
     bot_members = []
     knowledge_base_intent_enabled = false
-
+    knowledge_base_intents = []  # Explicitly set to empty array
+    
     # Bot-specific tags
     tags = {
       Application = "travel"
       Complexity  = "advanced"
       Category    = "travel-services"
     }
-
     # Single English locale for travel bot
     bot_locales = [
       {
@@ -369,14 +336,12 @@ lex_bots = {
         }
       }
     ]
-
     # Locale timeouts
     locale_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-
     # Travel bot intents (5 intents as requested)
     bot_intents = [
       # Intent 1: QnAbotIntent
@@ -392,7 +357,6 @@ lex_bots = {
           "Travel information please",
           "Help with travel planning"
         ]
-
         initial_response_setting = {
           initial_response = {
             allow_interrupt = true
@@ -403,16 +367,12 @@ lex_bots = {
             ]
           }
         }
-
         dialog_code_hook = null
-
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-
         confirmation_setting = null
-
         closing_setting = {
           active = true
           closing_response = {
@@ -424,13 +384,11 @@ lex_bots = {
             ]
           }
         }
-
         input_contexts          = []
         output_contexts         = []
         kendra_configuration    = null
         parent_intent_signature = null
       },
-
       # Intent 2: VIP Customer
       {
         name        = "VIPCustomer"
@@ -444,7 +402,6 @@ lex_bots = {
           "I have VIP status",
           "VIP customer support"
         ]
-
         initial_response_setting = {
           initial_response = {
             allow_interrupt = true
@@ -455,16 +412,12 @@ lex_bots = {
             ]
           }
         }
-
         dialog_code_hook = null
-
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-
         confirmation_setting = null
-
         closing_setting = {
           active = true
           closing_response = {
@@ -476,13 +429,11 @@ lex_bots = {
             ]
           }
         }
-
         input_contexts          = []
         output_contexts         = []
         kendra_configuration    = null
         parent_intent_signature = null
       },
-
       # Intent 3: SpeaktoAgent
       {
         name        = "SpeaktoAgent"
@@ -496,7 +447,6 @@ lex_bots = {
           "Human agent please",
           "Transfer to customer service"
         ]
-
         initial_response_setting = {
           initial_response = {
             allow_interrupt = true
@@ -507,16 +457,12 @@ lex_bots = {
             ]
           }
         }
-
         dialog_code_hook = null
-
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-
         confirmation_setting = null
-
         closing_setting = {
           active = true
           closing_response = {
@@ -528,13 +474,11 @@ lex_bots = {
             ]
           }
         }
-
         input_contexts          = []
         output_contexts         = []
         kendra_configuration    = null
         parent_intent_signature = null
       },
-
       # Intent 4: BookTickets
       {
         name        = "BookTickets"
@@ -548,7 +492,6 @@ lex_bots = {
           "Purchase bus tickets",
           "I need to book travel"
         ]
-
         initial_response_setting = {
           initial_response = {
             allow_interrupt = true
@@ -559,14 +502,11 @@ lex_bots = {
             ]
           }
         }
-
         dialog_code_hook = null
-
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-
         confirmation_setting = {
           active = true
           prompt_specification = {
@@ -585,7 +525,6 @@ lex_bots = {
           }
           declination_response = null
         }
-
         closing_setting = {
           active = true
           closing_response = {
@@ -597,13 +536,11 @@ lex_bots = {
             ]
           }
         }
-
         input_contexts          = []
         output_contexts         = []
         kendra_configuration    = null
         parent_intent_signature = null
       },
-
       # Intent 5: GetDepartureLocations
       {
         name        = "GetDepartureLocations"
@@ -617,7 +554,6 @@ lex_bots = {
           "Available departure points",
           "List departure cities"
         ]
-
         initial_response_setting = {
           initial_response = {
             allow_interrupt = true
@@ -628,16 +564,12 @@ lex_bots = {
             ]
           }
         }
-
         dialog_code_hook = null
-
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-
         confirmation_setting = null
-
         closing_setting = {
           active = true
           closing_response = {
@@ -649,21 +581,18 @@ lex_bots = {
             ]
           }
         }
-
         input_contexts          = []
         output_contexts         = []
         kendra_configuration    = null
         parent_intent_signature = null
       }
     ]
-
     # Intent timeouts
     intent_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-
     # Slots for travel bot
     bot_slots = [
       # Slot for BookTickets intent
@@ -675,21 +604,15 @@ lex_bots = {
         description  = "Travel destination"
         slot_type_id = "AMAZON.City"
         priority     = 2
-
         allow_multiple_values = false
-
         obfuscation_setting = null
-
         value_elicitation_setting = {
           slot_constraint = "Required"
-
           default_value_specification = null
-
           prompt_specification = {
             allow_interrupt            = true
             max_retries                = 2
             message_selection_strategy = "Random"
-
             message_groups = [
               {
                 plain_text_message = "Where would you like to travel to?"
@@ -698,10 +621,8 @@ lex_bots = {
                 plain_text_message = "Please tell me your destination city."
               }
             ]
-
             prompt_attempts_specification = null
           }
-
           sample_utterances = [
             {
               utterance = "New York"
@@ -713,14 +634,11 @@ lex_bots = {
               utterance = "Tokyo"
             }
           ]
-
           slot_resolution_setting         = null
           wait_and_continue_specification = null
         }
-
         sub_slot_setting = null
       },
-
       # Slot for BookTickets intent - Travel Date
       {
         name         = "TravelDate"
@@ -730,21 +648,15 @@ lex_bots = {
         description  = "Date of travel"
         slot_type_id = "AMAZON.Date"
         priority     = 1
-
         allow_multiple_values = false
-
         obfuscation_setting = null
-
         value_elicitation_setting = {
           slot_constraint = "Required"
-
           default_value_specification = null
-
           prompt_specification = {
             allow_interrupt            = true
             max_retries                = 2
             message_selection_strategy = "Random"
-
             message_groups = [
               {
                 plain_text_message = "When would you like to travel?"
@@ -753,18 +665,14 @@ lex_bots = {
                 plain_text_message = "Please provide your travel date."
               }
             ]
-
             prompt_attempts_specification = null
           }
-
           sample_utterances               = null
           slot_resolution_setting         = null
           wait_and_continue_specification = null
         }
-
         sub_slot_setting = null
       },
-
       # Slot for GetDepartureLocations intent
       {
         name         = "DepartureCity"
@@ -774,46 +682,35 @@ lex_bots = {
         description  = "Departure city for travel"
         slot_type_id = "AMAZON.City"
         priority     = 1
-
         allow_multiple_values = false
-
         obfuscation_setting = null
-
         value_elicitation_setting = {
           slot_constraint = "Optional"
-
           default_value_specification = null
-
           prompt_specification = {
             allow_interrupt            = true
             max_retries                = 1
             message_selection_strategy = "Random"
-
             message_groups = [
               {
                 plain_text_message = "Which city are you departing from? (optional)"
               }
             ]
-
             prompt_attempts_specification = null
           }
-
           sample_utterances               = null
           slot_resolution_setting         = null
           wait_and_continue_specification = null
         }
-
         sub_slot_setting = null
       }
     ]
-
     # Slot timeouts
     slot_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-
     # Custom slot types for travel bot
     bot_slot_types = [
       {
@@ -821,9 +718,7 @@ lex_bots = {
         locale_id   = "en_US"
         bot_version = "DRAFT"
         description = "Travel class options"
-
         parent_slot_type_signature = null
-
         slot_type_values = [
           {
             sample_value = {
@@ -856,25 +751,21 @@ lex_bots = {
             ]
           }
         ]
-
         value_selection_setting = {
           resolution_strategy          = "TopResolution"
           advanced_recognition_setting = null
           regex_filter                 = null
         }
-
         composite_slot_type_setting = null
         external_source_setting     = null
       }
     ]
-
     # Slot type timeouts
     slot_type_timeouts = {
       create = "30m"
       update = "30m"
       delete = "30m"
     }
-
     # Bot versions for travel bot
     bot_versions = [
       {

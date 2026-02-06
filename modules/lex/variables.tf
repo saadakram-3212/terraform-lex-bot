@@ -498,6 +498,8 @@ variable "knowledge_base_intents" {
     locale_id          = string
     knowledge_base_arn = string
     sample_utterances  = optional(list(string), [])
+    intent_closing_setting = optional(any)
+
   }))
   default = []
 }
