@@ -6,7 +6,6 @@ variable "bot_name" {
 variable "bot_description" {
   type        = string
   description = "Description of the Lex bot"
-  default     = ""
 }
 
 variable "role_arn" {
@@ -17,26 +16,22 @@ variable "role_arn" {
 variable "child_directed" {
   type        = bool
   description = "Whether the bot is directed at children"
-  default     = false
 }
 
 variable "idle_session_ttl_in_seconds" {
   type        = number
   description = "Time in seconds that the bot should keep the session active"
-  default     = 300
 }
 
 variable "bot_type" {
   type        = string
   description = "Type of the bot"
-  default     = "Bot"
 }
 
 
 variable "tags" {
   type        = map(string)
   description = "Tags to apply to all resources"
-  default     = {}
 }
 
 variable "bot_members" {
@@ -48,7 +43,6 @@ variable "bot_members" {
     version    = string
   }))
   description = "List of bot members for collaboration"
-  default     = []
 }
 
 variable "bot_locales" {
@@ -63,7 +57,6 @@ variable "bot_locales" {
     }))
   }))
   description = "List of bot locales"
-  default     = []
 }
 
 variable "bot_intents" {
@@ -152,13 +145,13 @@ variable "bot_intents" {
       }))
     }))
 
-    input_contexts = optional(list(string), [])
+    input_contexts = optional(list(string))
 
     output_contexts = optional(list(object({
       name                    = string
       time_to_live_in_seconds = number
       turns_to_live           = number
-    })), [])
+    })))
 
     kendra_configuration = optional(object({
       kendra_index                = string
@@ -169,7 +162,6 @@ variable "bot_intents" {
     parent_intent_signature = optional(string)
   }))
   description = "List of bot intents"
-  default     = []
 }
 
 variable "bot_slots" {
@@ -180,9 +172,9 @@ variable "bot_slots" {
     bot_version  = string
     description  = optional(string)
     slot_type_id = optional(string)
-    priority     = optional(number, 1)
+    priority     = optional(number)
     # Multiple values setting
-    allow_multiple_values = optional(bool, false)
+    allow_multiple_values = optional(bool)
 
     # Obfuscation setting
     obfuscation_setting = optional(object({
@@ -340,7 +332,7 @@ variable "bot_slots" {
           }))
 
           wait_and_continue_specification = optional(object({
-            active = optional(bool, true)
+            active = optional(bool)
 
             continue_response = object({
               allow_interrupt = optional(bool)
@@ -369,7 +361,6 @@ variable "bot_slots" {
       })))
     }))
   }))
-  default = []
 }
 
 variable "bot_versions" {
@@ -381,34 +372,30 @@ variable "bot_versions" {
     }))
   }))
   description = "List of bot versions"
-  default     = []
 }
 
 variable "locale_timeouts" {
   type = object({
-    create = optional(string, "5m")
-    update = optional(string, "5m")
-    delete = optional(string, "5m")
+    create = optional(string)
+    update = optional(string)
+    delete = optional(string)
   })
-  default = {}
 }
 
 variable "intent_timeouts" {
   type = object({
-    create = optional(string, "5m")
-    update = optional(string, "5m")
-    delete = optional(string, "5m")
+    create = optional(string)
+    update = optional(string)
+    delete = optional(string)
   })
-  default = {}
 }
 
 variable "slot_timeouts" {
   type = object({
-    create = optional(string, "5m")
-    update = optional(string, "5m")
-    delete = optional(string, "5m")
+    create = optional(string)
+    update = optional(string)
+    delete = optional(string)
   })
-  default = {}
 }
 
 variable "bot_slot_types" {
@@ -416,11 +403,11 @@ variable "bot_slot_types" {
   type = list(object({
     name        = string
     locale_id   = string
-    bot_version = optional(string, "DRAFT")
-    description = optional(string, "")
+    bot_version = optional(string)
+    description = optional(string)
 
     # Parent slot type signature for inheritance
-    parent_slot_type_signature = optional(string, null)
+    parent_slot_type_signature = optional(string)
 
     # Slot type values configuration
     slot_type_values = optional(list(object({
@@ -429,31 +416,29 @@ variable "bot_slot_types" {
       })
       synonyms = optional(list(object({
         value = string
-      })), [])
-    })), [])
+      })))
+    })))
 
     # Value selection setting
     value_selection_setting = optional(object({
-      resolution_strategy = optional(string, "OriginalValue")
+      resolution_strategy = optional(string)
 
       advanced_recognition_setting = optional(object({
-        audio_recognition_strategy = optional(string, null)
-      }), null)
+        audio_recognition_strategy = optional(string)
+      }))
 
       regex_filter = optional(object({
         pattern = string
-      }), null)
-      }), {
-      resolution_strategy = "OriginalValue"
-    })
+      }))
+      }))
 
     # Composite slot type setting
     composite_slot_type_setting = optional(object({
       sub_slots = optional(list(object({
         name         = string
         slot_type_id = string
-      })), [])
-    }), null)
+      })))
+    }))
 
     # External source setting (for grammar-based slot types)
     external_source_setting = optional(object({
@@ -461,26 +446,20 @@ variable "bot_slot_types" {
         source = optional(object({
           s3_bucket_name = string
           s3_object_key  = string
-          kms_key_arn    = optional(string, null)
-        }), null)
-      }), null)
-    }), null)
+          kms_key_arn    = optional(string)
+        }))
+      }))
+    }))
   }))
-  default = []
 }
 
 variable "slot_type_timeouts" {
   description = "Timeout configuration for slot type operations"
   type = object({
-    create = optional(string, "30m")
-    update = optional(string, "30m")
-    delete = optional(string, "30m")
+    create = optional(string)
+    update = optional(string)
+    delete = optional(string)
   })
-  default = {
-    create = "30m"
-    update = "30m"
-    delete = "30m"
-  }
 }
 
 variable "knowledge_base_intent_enabled" {
