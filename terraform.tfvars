@@ -12,7 +12,7 @@ lex_bots = {
 {
   intent_name       = "FAQKnowledgeBaseIntent"
   description       = "Intent to answer questions from a knowledge base"
-  knowledge_base_arn = "TOMBCJIKYO"
+  knowledge_base_arn = "X4ZGDWQTKG"
   locale_id         = "en_US"
   sample_utterances = ["This is just a test utterance"]
   modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
@@ -35,7 +35,7 @@ lex_bots = {
       {
         intent_name       = "GeneralQnAIntent"
         description       = "Intent to answer general questions using Bedrock Knowledge Base"
-        knowledge_base_arn = "TOMBCJIKYO"
+        knowledge_base_arn = "X4ZGDWQTKG"
         locale_id         = "en_US"
         sample_utterances = ["Which Items can I expense"]  
         intent_closing_setting = null 

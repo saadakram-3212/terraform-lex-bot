@@ -4,14 +4,13 @@ module "lex_bot" {
 
   source = "./modules/lex"
 
-  # Basic bot configuration
+  
   bot_name                    = each.value.bot_name
   bot_description             = each.value.bot_description
   child_directed              = each.value.child_directed
   idle_session_ttl_in_seconds = each.value.idle_session_ttl_in_seconds
   bot_type                    = each.value.bot_type
   role_arn                    = aws_iam_role.lexv2_service_role.arn
-  # IAM Configuration
 
   # Bot members
   bot_members = each.value.bot_members
@@ -24,7 +23,6 @@ module "lex_bot" {
     BotName = each.value.bot_name
   })
 
-  # Bot Versions
   bot_versions = each.value.bot_versions
 
   # Intents
