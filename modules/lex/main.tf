@@ -286,6 +286,10 @@ resource "aws_lexv2models_intent" "this" {
     delete = var.intent_timeouts.delete
   }
 
+  lifecycle {
+    ignore_changes = [slot_priority]
+  }
+
   depends_on = [aws_lexv2models_bot_locale.this]
 }
 

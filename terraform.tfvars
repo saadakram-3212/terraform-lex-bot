@@ -14,7 +14,7 @@ lex_bots = {
   description       = "Intent to answer questions from a knowledge base"
   knowledge_base_arn = "X4ZGDWQTKG"
   locale_id         = "en_US"
-  sample_utterances = ["This is just a test utterance"]
+  sample_utterances = ["This is just a test utterance","This is the second test utterance", "This is update of an intent from terraform"]
   modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
   intent_closing_setting = {
     active = true
@@ -80,7 +80,8 @@ lex_bots = {
           "Hello",
           "Hi",
           "Good morning",
-          "Good afternoon"
+          "Good afternoon",
+          "Hey there"
         ]
         initial_response_setting = {
           initial_response = {
@@ -605,7 +606,7 @@ lex_bots = {
         bot_version  = "DRAFT"
         description  = "Travel destination"
         slot_type_id = "AMAZON.City"
-        priority     = 2
+        priority     = 1
         allow_multiple_values = false
         obfuscation_setting = null
         value_elicitation_setting = {
@@ -649,7 +650,7 @@ lex_bots = {
         bot_version  = "DRAFT"
         description  = "Date of travel"
         slot_type_id = "AMAZON.Date"
-        priority     = 1
+        priority     = 2
         allow_multiple_values = false
         obfuscation_setting = null
         value_elicitation_setting = {
