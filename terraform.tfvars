@@ -3,7 +3,7 @@ lex_bots = {
   simple_faq_bot = {
     # Basic bot configuration
     bot_name                    = "simple-faq-bot"
-    bot_description             = "Simple FAQ bot for common questions"
+    bot_description             = "Simple FAQ bot for common questions-2"
     child_directed              = false
     idle_session_ttl_in_seconds = 300
     bot_type                    = "Bot"
@@ -80,8 +80,7 @@ lex_bots = {
           "Hello",
           "Hi",
           "Good morning",
-          "Good afternoon",
-          "Good evening"
+          "Good afternoon"
         ]
         initial_response_setting = {
           initial_response = {
