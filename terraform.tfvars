@@ -12,9 +12,9 @@ lex_bots = {
 {
   intent_name       = "FAQKnowledgeBaseIntent"
   description       = "Intent to answer questions from a knowledge base"
-  knowledge_base_arn = "X4ZGDWQTKG"
+  knowledge_base_arn = "RQGN7CWJ7D"
   locale_id         = "en_US"
-  sample_utterances = ["This is just a test utterance","This is the second test utterance", "This is update of an intent from terraform"]
+  sample_utterances = ["This is just a test utterance","This is the second test utterance", "This is update of an intent from terraform","This is another update of an intent from terraform"]
   modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
   intent_closing_setting = {
     active = true
@@ -35,7 +35,7 @@ lex_bots = {
       {
         intent_name       = "GeneralQnAIntent"
         description       = "Intent to answer general questions using Bedrock Knowledge Base"
-        knowledge_base_arn = "X4ZGDWQTKG"
+        knowledge_base_arn = "RQGN7CWJ7D"
         locale_id         = "en_US"
         sample_utterances = ["Which Items can I expense"]  
         intent_closing_setting = null 
@@ -81,7 +81,7 @@ lex_bots = {
           "Hi",
           "Good morning",
           "Good afternoon",
-          "Hey there"
+          "Good evening"
         ]
         initial_response_setting = {
           initial_response = {

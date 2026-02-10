@@ -666,25 +666,58 @@ resource "aws_lexv2models_slot" "this" {
 }
 
 # Lex V2 Bot Version
-resource "aws_lexv2models_bot_version" "this" {
-  for_each = { for version in var.bot_versions : version.version_name => version }
+# resource "aws_lexv2models_bot_version" "this" {
 
-  bot_id      = aws_lexv2models_bot.this.id
-  description = each.value.description
+#   bot_id      = aws_lexv2models_bot.this.id
+#   description = "no description today"
 
-  locale_specification = {
-    for locale_id, locale_config in each.value.locale_specification :
-    locale_id => {
-      source_bot_version = locale_config.source_bot_version
-    }
-  }
+#   locale_specification = {
+#     "en_US" = {
+#       source_bot_version = "DRAFT"
+#     }
+  
+#   }
 
-  depends_on = [
-    aws_lexv2models_bot_locale.this,
-    aws_lexv2models_intent.this,
-    aws_lexv2models_slot.this
-  ]
-}
+#   depends_on = [
+#     aws_lexv2models_bot_locale.this,
+#     aws_lexv2models_intent.this,
+#     aws_lexv2models_slot.this
+#   ]
+# }
+
+# Lex V2 Bot Version
+# resource "aws_lexv2models_bot_version" "this" {
+#   bot_id      = aws_lexv2models_bot.this.id
+#   description = "Version created at ${timestamp()} - Hash: ${substr(sha256(jsonencode({
+#     bot_config    = aws_lexv2models_bot.this
+#     locales       = { for k, v in aws_lexv2models_bot_locale.this : k => v.id }
+#     intents       = { for k, v in aws_lexv2models_intent.this : k => v.intent_id }
+#     slots         = { for k, v in aws_lexv2models_slot.this : k => v.id }
+#     slot_types    = { for k, v in aws_lexv2models_slot_type.this : k => v.id }
+#     intent_updates = { for k, v in null_resource.update_intent : k => v.id }
+#     qna_intents   = { for k, v in null_resource.create_qna_intent : k => v.id }
+#   })), 0, 8)}"
+
+#   locale_specification = {
+#     "en_US" = {
+#       source_bot_version = "DRAFT"
+#     }
+#   }
+
+#   lifecycle {
+#     create_before_destroy = true
+#   }
+
+#   depends_on = [
+#     aws_lexv2models_bot_locale.this,
+#     aws_lexv2models_intent.this,
+#     aws_lexv2models_slot.this,
+#     null_resource.update_intent,
+#     null_resource.create_qna_intent
+#   ]
+# }
+
+
 
 # Lex V2 Slot Type
 resource "aws_lexv2models_slot_type" "this" {
@@ -955,5 +988,114 @@ resource "null_resource" "create_qna_intent" {
 
   depends_on = [
     aws_lexv2models_bot_locale.this
+  ]
+}
+
+
+resource "null_resource" "build_bot_locale" {
+  for_each = { for locale in var.bot_locales : locale.locale_id => locale }
+
+
+  triggers = {
+    bot_id    = aws_lexv2models_bot.this.id
+    locale_id = each.key
+
+    intents_hash        = sha1(jsonencode({ for k, v in aws_lexv2models_intent.this : k => v.intent_id if v.locale_id == each.key }))
+    slots_hash          = sha1(jsonencode({ for k, v in aws_lexv2models_slot.this : k => v.id if v.locale_id == each.key }))
+    slot_types_hash     = sha1(jsonencode({ for k, v in aws_lexv2models_slot_type.this : k => v.id if v.locale_id == each.key }))
+    qna_intent_hash     = sha1(jsonencode({ for k, v in null_resource.create_qna_intent : k => v.id if startswith(k, each.key) }))
+    intent_content_hash = sha1(jsonencode({ for k, intent in local.intents_by_key : k => {
+      utterances   = intent.sample_utterances
+      dialog_hook  = intent.dialog_code_hook
+      fulfillment  = intent.fulfillment_code_hook
+      confirmation = intent.confirmation_setting
+      closing      = intent.closing_setting
+      input_ctx    = intent.input_contexts
+      output_ctx   = intent.output_contexts
+      kendra       = intent.kendra_configuration
+    } if endswith(k, ".${each.key}") }))
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "Building bot locale ${each.key} for bot ${aws_lexv2models_bot.this.id}..."
+
+      aws lexv2-models build-bot-locale \
+        --bot-id ${aws_lexv2models_bot.this.id} \
+        --bot-version DRAFT \
+        --locale-id ${each.key}
+
+      echo "Build initiated for locale ${each.key}. Waiting for build to complete..."
+
+      # Poll until the locale build status is Built or Failed
+      for i in $(seq 1 30); do
+        STATUS=$(aws lexv2-models describe-bot-locale \
+          --bot-id ${aws_lexv2models_bot.this.id} \
+          --bot-version DRAFT \
+          --locale-id ${each.key} \
+          --query 'botLocaleStatus' \
+          --output text)
+
+        echo "Current build status for locale ${each.key}: $STATUS (attempt $i/30)"
+
+        if [ "$STATUS" = "Built" ]; then
+          echo "Bot locale ${each.key} built successfully."
+          exit 0
+        elif [ "$STATUS" = "Failed" ]; then
+          echo "Bot locale ${each.key} build FAILED."
+          aws lexv2-models describe-bot-locale \
+            --bot-id ${aws_lexv2models_bot.this.id} \
+            --bot-version DRAFT \
+            --locale-id ${each.key} \
+            --query 'failureReasons' \
+            --output text
+          exit 1
+        fi
+
+        sleep 10
+      done
+
+      echo "Timed out waiting for bot locale ${each.key} to build."
+      exit 1
+    EOT
+  }
+
+  depends_on = [
+    aws_lexv2models_bot_locale.this,
+    aws_lexv2models_intent.this,
+    aws_lexv2models_slot.this,
+    aws_lexv2models_slot_type.this,
+    null_resource.update_intent,
+    null_resource.create_qna_intent
+  ]
+}
+
+
+## BOT VERSION
+resource "aws_lexv2models_bot_version" "this" {
+  bot_id      = aws_lexv2models_bot.this.id
+  description = "Hash: ${substr(sha256(jsonencode({
+    intent_updates = { for k, v in null_resource.update_intent : k => v.id }
+    qna_intents    = { for k, v in null_resource.create_qna_intent : k => v.id }
+    bot_builds     = { for k, v in null_resource.build_bot_locale : k => v.triggers }
+  })), 0, 8)}"
+
+  locale_specification = {
+    "en_US" = {
+      source_bot_version = "DRAFT"
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  depends_on = [
+    aws_lexv2models_bot_locale.this,
+    aws_lexv2models_intent.this,
+    aws_lexv2models_slot.this,
+    null_resource.update_intent,
+    null_resource.create_qna_intent,
+    null_resource.build_bot_locale
   ]
 }
