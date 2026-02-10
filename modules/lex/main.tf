@@ -927,6 +927,72 @@ resource "null_resource" "update_intent" {
 
 
 # Null resource to create QnA Intents via AWS CLI 
+# resource "null_resource" "create_qna_intent" {
+#   for_each = var.knowledge_base_intent_enabled ? {
+#     for idx, intent in var.knowledge_base_intents : 
+#     "${intent.locale_id}.${intent.intent_name}" => intent
+#   } : {}
+
+#   triggers = {
+#     bot_id             = aws_lexv2models_bot.this.id
+#     knowledge_base_arn = each.value.knowledge_base_arn
+#     locale_id          = each.value.locale_id
+#     intent_name        = each.value.intent_name
+#     description        = each.value.description
+#     settings_hash      = sha1(jsonencode(each.value))
+#   }
+
+#   provisioner "local-exec" {
+#     command = <<-EOT
+#       aws lexv2-models create-intent \
+#         --bot-id ${aws_lexv2models_bot.this.id} \
+#         --bot-version DRAFT \
+#         --locale-id ${each.value.locale_id} \
+#         --intent-name ${each.value.intent_name} \
+#         --description "${each.value.description}" \
+#         --parent-intent-signature AMAZON.QnAIntent \
+#         ${lookup(each.value, "intent_closing_setting", null) != null ? "--intent-closing-setting '${jsonencode(each.value.intent_closing_setting)}'" : ""} \
+#         ${length(lookup(each.value, "sample_utterances", [])) > 0 ? "--sample-utterances '${jsonencode([for utterance in each.value.sample_utterances : { utterance = utterance }])}'" : ""} \
+#         --qn-a-intent-configuration '${jsonencode({
+#       dataSourceConfiguration = {
+#         bedrockKnowledgeStoreConfiguration = {
+#           bedrockKnowledgeBaseArn = each.value.knowledge_base_arn
+#         }
+#       }
+#       bedrockModelConfiguration = {
+#         modelArn = each.value.modelArn
+#       }
+#         })}'
+#     EOT
+#   }
+
+#   provisioner "local-exec" {
+#     when    = destroy
+#     command = <<-EOT
+#       INTENT_ID=$(aws lexv2-models list-intents \
+#         --bot-id ${self.triggers.bot_id} \
+#         --bot-version DRAFT \
+#         --locale-id ${self.triggers.locale_id} \
+#         --query "intentSummaries[?intentName=='${self.triggers.intent_name}'].intentId" \
+#         --output text)
+      
+#       if [ ! -z "$INTENT_ID" ]; then
+#         aws lexv2-models delete-intent \
+#           --bot-id ${self.triggers.bot_id} \
+#           --bot-version DRAFT \
+#           --locale-id ${self.triggers.locale_id} \
+#           --intent-id $INTENT_ID
+#       fi
+#     EOT
+#   }
+
+#   depends_on = [
+#     aws_lexv2models_bot_locale.this
+#   ]
+# }
+
+// ...existing code...
+
 resource "null_resource" "create_qna_intent" {
   for_each = var.knowledge_base_intent_enabled ? {
     for idx, intent in var.knowledge_base_intents : 
@@ -944,25 +1010,63 @@ resource "null_resource" "create_qna_intent" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      aws lexv2-models create-intent \
+      # Check if intent already exists
+      INTENT_ID=$(aws lexv2-models list-intents \
         --bot-id ${aws_lexv2models_bot.this.id} \
         --bot-version DRAFT \
         --locale-id ${each.value.locale_id} \
-        --intent-name ${each.value.intent_name} \
-        --description "${each.value.description}" \
-        --parent-intent-signature AMAZON.QnAIntent \
-        ${lookup(each.value, "intent_closing_setting", null) != null ? "--intent-closing-setting '${jsonencode(each.value.intent_closing_setting)}'" : ""} \
-        ${length(lookup(each.value, "sample_utterances", [])) > 0 ? "--sample-utterances '${jsonencode([for utterance in each.value.sample_utterances : { utterance = utterance }])}'" : ""} \
-        --qn-a-intent-configuration '${jsonencode({
-      dataSourceConfiguration = {
-        bedrockKnowledgeStoreConfiguration = {
-          bedrockKnowledgeBaseArn = each.value.knowledge_base_arn
+        --query "intentSummaries[?intentName=='${each.value.intent_name}'].intentId" \
+        --output text)
+
+      if [ -z "$INTENT_ID" ]; then
+        echo "Intent '${each.value.intent_name}' does not exist. Creating..."
+        
+        aws lexv2-models create-intent \
+          --bot-id ${aws_lexv2models_bot.this.id} \
+          --bot-version DRAFT \
+          --locale-id ${each.value.locale_id} \
+          --intent-name ${each.value.intent_name} \
+          --description "${each.value.description}" \
+          --parent-intent-signature AMAZON.QnAIntent \
+          ${lookup(each.value, "intent_closing_setting", null) != null ? "--intent-closing-setting '${jsonencode(each.value.intent_closing_setting)}'" : ""} \
+          ${length(lookup(each.value, "sample_utterances", [])) > 0 ? "--sample-utterances '${jsonencode([for utterance in each.value.sample_utterances : { utterance = utterance }])}'" : ""} \
+          --qn-a-intent-configuration '${jsonencode({
+        dataSourceConfiguration = {
+          bedrockKnowledgeStoreConfiguration = {
+            bedrockKnowledgeBaseArn = each.value.knowledge_base_arn
+          }
         }
-      }
-      bedrockModelConfiguration = {
-        modelArn = each.value.modelArn
-      }
-        })}'
+        bedrockModelConfiguration = {
+          modelArn = each.value.modelArn
+        }
+          })}'
+        
+        echo "Intent '${each.value.intent_name}' created successfully."
+      else
+        echo "Intent '${each.value.intent_name}' already exists with ID: $INTENT_ID. Updating..."
+        
+        aws lexv2-models update-intent \
+          --bot-id ${aws_lexv2models_bot.this.id} \
+          --bot-version DRAFT \
+          --locale-id ${each.value.locale_id} \
+          --intent-id $INTENT_ID \
+          --intent-name ${each.value.intent_name} \
+          --description "${each.value.description}" \
+          ${lookup(each.value, "intent_closing_setting", null) != null ? "--intent-closing-setting '${jsonencode(each.value.intent_closing_setting)}'" : ""} \
+          ${length(lookup(each.value, "sample_utterances", [])) > 0 ? "--sample-utterances '${jsonencode([for utterance in each.value.sample_utterances : { utterance = utterance }])}'" : ""} \
+          --qn-a-intent-configuration '${jsonencode({
+        dataSourceConfiguration = {
+          bedrockKnowledgeStoreConfiguration = {
+            bedrockKnowledgeBaseArn = each.value.knowledge_base_arn
+          }
+        }
+        bedrockModelConfiguration = {
+          modelArn = each.value.modelArn
+        }
+          })}'
+        
+        echo "Intent '${each.value.intent_name}' updated successfully."
+      fi
     EOT
   }
 
@@ -977,11 +1081,15 @@ resource "null_resource" "create_qna_intent" {
         --output text)
       
       if [ ! -z "$INTENT_ID" ]; then
+        echo "Deleting intent '${self.triggers.intent_name}' with ID: $INTENT_ID..."
         aws lexv2-models delete-intent \
           --bot-id ${self.triggers.bot_id} \
           --bot-version DRAFT \
           --locale-id ${self.triggers.locale_id} \
           --intent-id $INTENT_ID
+        echo "Intent deleted successfully."
+      else
+        echo "Intent '${self.triggers.intent_name}' not found. Skipping deletion."
       fi
     EOT
   }
