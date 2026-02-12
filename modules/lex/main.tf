@@ -1288,3 +1288,47 @@ resource "null_resource" "bot_alias" {
 
 # Data source to get current region
 data "aws_region" "current" {}
+
+
+
+### Connect Integration
+
+
+
+
+## CONNECT INTEGRATION (with null_resource approach)
+resource "awscc_connect_integration_association" "this" {
+  count = var.integrate_to_connect ? 1 : 0
+
+  instance_id      = var.connect_instance_id
+  integration_arn  = "arn:aws:lex:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:bot-alias/${aws_lexv2models_bot.this.id}/${local.bot_alias_id}"
+  integration_type = "LEX_BOT"
+
+  depends_on = [
+    null_resource.bot_alias
+  ]
+}
+
+# Local to fetch alias ID if using null_resource
+locals {
+  bot_alias_id = var.integrate_to_connect && var.create_bot_alias ? data.external.get_alias_id[0].result.alias_id : ""
+}
+
+data "external" "get_alias_id" {
+  count = var.integrate_to_connect && var.create_bot_alias ? 1 : 0
+
+  program = ["bash", "-c", <<-EOT
+    ALIAS_ID=$(aws lexv2-models list-bot-aliases \
+      --bot-id ${aws_lexv2models_bot.this.id} \
+      --query "botAliasSummaries[?botAliasName=='${var.bot_alias_name}'].botAliasId" \
+      --output text)
+    echo "{\"alias_id\": \"$ALIAS_ID\"}"
+  EOT
+  ]
+
+  depends_on = [
+    null_resource.bot_alias
+  ]
+}
+
+data "aws_caller_identity" "current" {}

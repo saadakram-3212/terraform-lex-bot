@@ -12,6 +12,8 @@ lex_bots = {
     bot_alias_name = "simple-faq-bot-alias"
     bot_alias_version = "1"
     bot_alias_description = "Alias for simple FAQ bot"
+    integrate_to_connect = true
+    connect_instance_id  = "arn:aws:connect:us-east-1:387867038403:instance/b8a0bb47-005c-4c4a-9c54-1b1937ed2613"
     knowledge_base_intents = [
 {
   intent_name       = "FAQKnowledgeBaseIntent"
@@ -319,6 +321,7 @@ lex_bots = {
     idle_session_ttl_in_seconds = 600
     bot_type                    = "Bot"
     create_bot_alias = false
+    integrate_to_connect = false
    
     bot_members = []
     knowledge_base_intent_enabled = false

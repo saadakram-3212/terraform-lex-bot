@@ -18,6 +18,9 @@ variable "lex_bots" {
     bot_alias_version          = optional(string)
     bot_alias_description      = optional(string)
 
+    # Connect integration
+    integrate_to_connect = bool
+    connect_instance_id  = optional(string)
     
     bot_members = optional(list(object({
       alias_id   = string

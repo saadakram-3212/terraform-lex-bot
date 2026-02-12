@@ -483,7 +483,7 @@ variable "knowledge_base_intents" {
   default = []
 }
 
-
+## Creation of BOT ALIAS
 variable "create_bot_alias" {
   description = "Flag to create a bot alias"
   type        = bool
@@ -501,5 +501,17 @@ variable "bot_alias_version" {
 
 variable "bot_alias_description" {
   description = "Description of the bot alias"
+  type        = string
+}
+
+## Adding bot to Connect
+
+variable "integrate_to_connect" {
+  description = "Flag to integrate the bot with Amazon Connect"
+  type        = bool
+}
+
+variable "connect_instance_id" {
+  description = "ID of the Amazon Connect instance to integrate with"
   type        = string
 }

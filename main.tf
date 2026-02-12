@@ -18,6 +18,10 @@ module "lex_bot" {
   bot_alias_version = each.value.bot_alias_version
   bot_alias_description = each.value.bot_alias_description
 
+  # Connect Integration
+  integrate_to_connect = each.value.integrate_to_connect
+  connect_instance_id  = each.value.connect_instance_id
+
   # Bot members
   bot_members = each.value.bot_members
 
