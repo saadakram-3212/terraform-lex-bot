@@ -515,3 +515,41 @@ variable "connect_instance_id" {
   description = "ID of the Amazon Connect instance to integrate with"
   type        = string
 }
+
+
+variable "enable_conversation_logs" {
+  description = "Enable conversation logs for the bot alias"
+  type        = bool
+  default     = false
+}
+
+variable "conversation_log_settings" {
+  description = "Conversation log settings for the bot alias"
+  type = object({
+    textLogSettings = optional(list(object({
+      enabled = bool
+      destination = object({
+        cloudWatch = object({
+          cloudWatchLogGroupArn = string
+          logPrefix             = string
+        })
+      })
+      selectiveLoggingEnabled = optional(bool)
+    })))
+    audioLogSettings = optional(list(object({
+      enabled = bool
+      destination = object({
+        s3Bucket = object({
+          kmsKeyArn   = optional(string)
+          s3BucketArn = string
+          logPrefix   = string
+        })
+      })
+      selectiveLoggingEnabled = optional(bool)
+    })))
+  })
+  default = {
+    textLogSettings  = []
+    audioLogSettings = []
+  }
+}

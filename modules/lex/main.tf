@@ -1240,52 +1240,64 @@ resource "null_resource" "bot_version" {
 ## For BOT ALIAS
 
 ## BOT ALIAS
+locals {
+  # Build conversation log settings JSON properly
+  conversation_log_settings_json = var.enable_conversation_logs ? jsonencode(
+    merge(
+      length(var.conversation_log_settings.textLogSettings) > 0 ? {
+        textLogSettings = var.conversation_log_settings.textLogSettings
+      } : {},
+      length(var.conversation_log_settings.audioLogSettings) > 0 ? {
+        audioLogSettings = var.conversation_log_settings.audioLogSettings
+      } : {}
+    )
+  ) : ""
+}
+
 resource "null_resource" "bot_alias" {
   count = var.create_bot_alias ? 1 : 0
-
+  
   triggers = {
-    bot_id      = aws_lexv2models_bot.this.id
-    alias_name  = var.bot_alias_name
-    bot_version = var.bot_alias_version
-    description = var.bot_alias_description
+    bot_id                    = aws_lexv2models_bot.this.id
+    alias_name                = var.bot_alias_name
+    bot_version               = var.bot_alias_version
+    description               = var.bot_alias_description
+    conversation_logs_enabled = var.enable_conversation_logs
+    conversation_logs_config  = local.conversation_log_settings_json
   }
-
+  
   provisioner "local-exec" {
     command = <<-EOT
       echo "Creating bot alias '${var.bot_alias_name}' for bot ${aws_lexv2models_bot.this.id} pointing to version ${var.bot_alias_version}..."
-
       aws lexv2-models create-bot-alias \
         --bot-id ${aws_lexv2models_bot.this.id} \
         --bot-alias-name ${var.bot_alias_name} \
         --description "${var.bot_alias_description}" \
         --bot-version ${var.bot_alias_version} \
-        --region ${data.aws_region.current.name}
-
+        --region ${data.aws_region.current.name} \
+        ${var.enable_conversation_logs ? "--conversation-log-settings '${local.conversation_log_settings_json}'" : ""}
       echo "Bot alias '${var.bot_alias_name}' created successfully."
     EOT
   }
-
+  
   provisioner "local-exec" {
     when    = destroy
     command = <<-EOT
       echo "Deleting bot alias '${self.triggers.alias_name}'..."
-      
       aws lexv2-models delete-bot-alias \
         --bot-id ${self.triggers.bot_id} \
         --bot-alias-id $(aws lexv2-models list-bot-aliases \
           --bot-id ${self.triggers.bot_id} \
           --query "botAliasSummaries[?botAliasName=='${self.triggers.alias_name}'].botAliasId" \
           --output text)
-
       echo "Bot alias deleted successfully."
     EOT
   }
-
+  
   depends_on = [
     null_resource.bot_version
   ]
 }
-
 # Data source to get current region
 data "aws_region" "current" {}
 

@@ -7,13 +7,29 @@ lex_bots = {
     child_directed              = false
     idle_session_ttl_in_seconds = 300
     bot_type                    = "Bot"
-    knowledge_base_intent_enabled = true
+    knowledge_base_intent_enabled = false
     create_bot_alias = true
     bot_alias_name = "simple-faq-bot-alias"
     bot_alias_version = "1"
     bot_alias_description = "Alias for simple FAQ bot"
     integrate_to_connect = true
     connect_instance_id  = "arn:aws:connect:us-east-1:387867038403:instance/b8a0bb47-005c-4c4a-9c54-1b1937ed2613"
+    enable_conversation_logs = true
+    conversation_log_settings = {
+    textLogSettings = [
+      {
+        enabled = true
+        destination = {
+          cloudWatch = {
+            cloudWatchLogGroupArn = "arn:aws:logs:us-east-1:387867038403:log-group:lex-bot-test-log-group:*"
+            logPrefix             = "bot-alias"
+          }
+        }
+        selectiveLoggingEnabled = false
+      }
+    ]
+    audioLogSettings = [] ## This has to be kept as empty array if not used, otherwise it throws an error. Cannot be null or undefined.
+    }
     knowledge_base_intents = [
 {
   intent_name       = "FAQKnowledgeBaseIntent"

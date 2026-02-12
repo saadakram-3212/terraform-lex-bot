@@ -17,6 +17,30 @@ variable "lex_bots" {
     bot_alias_name             = optional(string)
     bot_alias_version          = optional(string)
     bot_alias_description      = optional(string)
+    enable_conversation_logs = optional(bool, false)
+    conversation_log_settings = optional(object({
+      textLogSettings  = optional(list(object({
+        enabled = bool
+        destination = object({
+          cloudWatch = object({
+            cloudWatchLogGroupArn = string
+            logPrefix             = string
+          })
+        })
+        selectiveLoggingEnabled = optional(bool)
+      })))
+      audioLogSettings = optional(list(object({
+        enabled = bool
+        destination = optional(object({
+          s3Bucket = object({
+            kmsKeyArn   = optional(string)
+            s3BucketArn = string
+            logPrefix   = string
+          })
+        }))
+        selectiveLoggingEnabled = optional(bool)
+      })))
+    }), null)
 
     # Connect integration
     integrate_to_connect = bool
@@ -456,3 +480,4 @@ knowledge_base_intents = optional(list(object({
     tags = optional(map(string))
   }))
 }
+

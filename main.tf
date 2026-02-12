@@ -17,6 +17,9 @@ module "lex_bot" {
   bot_alias_name = each.value.bot_alias_name
   bot_alias_version = each.value.bot_alias_version
   bot_alias_description = each.value.bot_alias_description
+  enable_conversation_logs = each.value.enable_conversation_logs
+  conversation_log_settings = each.value.conversation_log_settings
+  
 
   # Connect Integration
   integrate_to_connect = each.value.integrate_to_connect
