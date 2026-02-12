@@ -8,11 +8,15 @@ lex_bots = {
     idle_session_ttl_in_seconds = 300
     bot_type                    = "Bot"
     knowledge_base_intent_enabled = true
+    create_bot_alias = true
+    bot_alias_name = "simple-faq-bot-alias"
+    bot_alias_version = "1"
+    bot_alias_description = "Alias for simple FAQ bot"
     knowledge_base_intents = [
 {
   intent_name       = "FAQKnowledgeBaseIntent"
   description       = "Intent to answer questions from a knowledge base"
-  knowledge_base_arn = "RQGN7CWJ7D"
+  knowledge_base_arn = "G9ZVCX7150"
   locale_id         = "en_US"
   sample_utterances = ["This is just a test utterance","This is the second test utterance"]
   modelArn = "arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0"
@@ -35,7 +39,7 @@ lex_bots = {
       {
         intent_name       = "GeneralQnAIntent"
         description       = "Intent to answer general questions using Bedrock Knowledge Base"
-        knowledge_base_arn = "RQGN7CWJ7D"
+        knowledge_base_arn = "G9ZVCX7150"
         locale_id         = "en_US"
         sample_utterances = ["Which Items can I expense"]  
         intent_closing_setting = null 
@@ -314,6 +318,7 @@ lex_bots = {
     child_directed              = false
     idle_session_ttl_in_seconds = 600
     bot_type                    = "Bot"
+    create_bot_alias = false
    
     bot_members = []
     knowledge_base_intent_enabled = false

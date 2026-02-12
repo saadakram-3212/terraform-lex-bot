@@ -482,3 +482,24 @@ variable "knowledge_base_intents" {
   }))
   default = []
 }
+
+
+variable "create_bot_alias" {
+  description = "Flag to create a bot alias"
+  type        = bool
+}
+
+variable "bot_alias_name" {
+  description = "Name of the bot alias"
+  type        = string
+}
+
+variable "bot_alias_version" {
+  description = "Version of the bot for the alias"
+  type        = string
+}
+
+variable "bot_alias_description" {
+  description = "Description of the bot alias"
+  type        = string
+}

@@ -12,6 +12,12 @@ module "lex_bot" {
   bot_type                    = each.value.bot_type
   role_arn                    = aws_iam_role.lexv2_service_role.arn
 
+  # Bot alias configuration
+  create_bot_alias = each.value.create_bot_alias
+  bot_alias_name = each.value.bot_alias_name
+  bot_alias_version = each.value.bot_alias_version
+  bot_alias_description = each.value.bot_alias_description
+
   # Bot members
   bot_members = each.value.bot_members
 

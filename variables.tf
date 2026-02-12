@@ -13,7 +13,10 @@ variable "lex_bots" {
     child_directed              = optional(bool)
     idle_session_ttl_in_seconds = optional(number)
     bot_type                    = optional(string)
-
+    create_bot_alias          = bool
+    bot_alias_name             = optional(string)
+    bot_alias_version          = optional(string)
+    bot_alias_description      = optional(string)
 
     
     bot_members = optional(list(object({
