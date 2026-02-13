@@ -83,6 +83,16 @@ lex_bots = {
           voice_id = "Joanna"
           engine   = "neural"
         }
+      },
+      {
+        locale_id                        = "es_ES"
+        bot_version                      = "DRAFT"
+        n_lu_intent_confidence_threshold = 0.70
+        description                      = "Spanish locale for FAQ bot"
+        voice_settings = {
+          voice_id = "Lucia"
+          engine   = "neural"
+        }
       }
     ]
     
@@ -127,6 +137,47 @@ lex_bots = {
             message_groups = [
               {
                 plain_text_message = "Is there anything else I can help you with?"
+              }
+            ]
+          }
+        }
+        input_contexts          = []
+        output_contexts         = []
+        kendra_configuration    = null
+        parent_intent_signature = null
+      },
+      {
+        name        = "GreetingSpanish"
+        bot_version = "DRAFT"
+        locale_id   = "es_ES"
+        description = "Greeting intent"
+        sample_utterances = [
+          "Buenos días",
+          "Buenas tardes"
+        ]
+        initial_response_setting = {
+          initial_response = {
+            allow_interrupt = true
+            message_groups = [
+              {
+                plain_text_message = "¡Hola! ¿Cómo puedo ayudarte hoy?"
+              }
+            ]
+          }
+        }
+        dialog_code_hook = null
+        fulfillment_code_hook = {
+          enabled = false
+          active  = false
+        }
+        confirmation_setting = null
+        closing_setting = {
+          active = true
+          closing_response = {
+            allow_interrupt = false
+            message_groups = [
+              {
+                plain_text_message = "¿Hay algo más en lo que pueda ayudarte?"
               }
             ]
           }

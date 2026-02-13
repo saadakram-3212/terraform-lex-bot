@@ -1180,36 +1180,42 @@ resource "null_resource" "build_bot_locale" {
 
 
 ## BOT VERSION
+locals {
+  # Build bot version locale specification dynamically
+  bot_version_locale_spec = jsonencode({
+    for locale_key, locale in aws_lexv2models_bot_locale.this : 
+    locale.locale_id => {
+      sourceBotVersion = "DRAFT"
+    }
+  })
+}
+
 resource "null_resource" "bot_version" {
   triggers = {
     bot_config      = sha1(jsonencode(aws_lexv2models_bot.this))
-    bot_builds     = sha1(jsonencode({ for k, v in null_resource.build_bot_locale : k => v.triggers }))
-    intent_updates = sha1(jsonencode({ for k, v in null_resource.update_intent : k => v.triggers }))
-    qna_intents    = sha1(jsonencode({ for k, v in null_resource.create_qna_intent : k => v.triggers }))
+    bot_builds      = sha1(jsonencode({ for k, v in null_resource.build_bot_locale : k => v.triggers }))
+    intent_updates  = sha1(jsonencode({ for k, v in null_resource.update_intent : k => v.triggers }))
+    qna_intents     = sha1(jsonencode({ for k, v in null_resource.create_qna_intent : k => v.triggers }))
+    locale_spec     = local.bot_version_locale_spec
   }
-
+  
   provisioner "local-exec" {
     command = <<-EOT
       echo "Creating new bot version for bot ${aws_lexv2models_bot.this.id}..."
-
       VERSION=$(aws lexv2-models create-bot-version \
         --bot-id ${aws_lexv2models_bot.this.id} \
         --description "Hash: ${sha1(jsonencode({ for k, v in null_resource.build_bot_locale : k => v.triggers }))}" \
-        --bot-version-locale-specification '{"en_US": {"sourceBotVersion": "DRAFT"}}' \
+        --bot-version-locale-specification '${local.bot_version_locale_spec}' \
         --query 'botVersion' \
         --output text)
-
       echo "Bot version $VERSION created. Waiting for it to become available..."
-
       for i in $(seq 1 30); do
         STATUS=$(aws lexv2-models describe-bot-version \
           --bot-id ${aws_lexv2models_bot.this.id} \
           --bot-version $VERSION \
           --query 'botStatus' \
           --output text)
-
         echo "Current status: $STATUS (attempt $i/30)"
-
         if [ "$STATUS" = "Available" ]; then
           echo "Bot version $VERSION is available."
           exit 0
@@ -1217,15 +1223,13 @@ resource "null_resource" "bot_version" {
           echo "Bot version $VERSION FAILED."
           exit 1
         fi
-
         sleep 10
       done
-
       echo "Timed out waiting for bot version $VERSION to become available."
       exit 1
     EOT
   }
-
+  
   depends_on = [
     aws_lexv2models_bot_locale.this,
     aws_lexv2models_intent.this,
@@ -1235,7 +1239,6 @@ resource "null_resource" "bot_version" {
     null_resource.build_bot_locale
   ]
 }
-
 
 ## For BOT ALIAS
 
