@@ -1211,6 +1211,7 @@ resource "null_resource" "bot_alias" {
     description               = var.bot_alias_description
     conversation_logs_enabled = var.enable_conversation_logs
     conversation_logs_config  = local.conversation_log_settings_json
+    #tags                      = jsonencode(var.alias_tags)
   }
   
   provisioner "local-exec" {
