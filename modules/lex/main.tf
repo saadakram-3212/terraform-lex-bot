@@ -579,13 +579,6 @@ resource "aws_lexv2models_slot" "this" {
               }
             }
 
-            # Include slot resolution setting if provided
-            #dynamic "slot_resolution_setting" {
-            #for_each = try(spec.value.value_elicitation_setting.slot_resolution_setting != null ? [spec.value.value_elicitation_setting.slot_resolution_setting] : [], [])
-            #content {
-            #slot_resolution_strategy = slot_resolution_setting.value.slot_resolution_strategy
-            #}
-            #}
 
             # Include wait and continue specification if provided
             dynamic "wait_and_continue_specification" {
@@ -664,60 +657,6 @@ resource "aws_lexv2models_slot" "this" {
     aws_lexv2models_intent.this
   ]
 }
-
-# Lex V2 Bot Version
-# resource "aws_lexv2models_bot_version" "this" {
-
-#   bot_id      = aws_lexv2models_bot.this.id
-#   description = "no description today"
-
-#   locale_specification = {
-#     "en_US" = {
-#       source_bot_version = "DRAFT"
-#     }
-  
-#   }
-
-#   depends_on = [
-#     aws_lexv2models_bot_locale.this,
-#     aws_lexv2models_intent.this,
-#     aws_lexv2models_slot.this
-#   ]
-# }
-
-# Lex V2 Bot Version
-# resource "aws_lexv2models_bot_version" "this" {
-#   bot_id      = aws_lexv2models_bot.this.id
-#   description = "Version created at ${timestamp()} - Hash: ${substr(sha256(jsonencode({
-#     bot_config    = aws_lexv2models_bot.this
-#     locales       = { for k, v in aws_lexv2models_bot_locale.this : k => v.id }
-#     intents       = { for k, v in aws_lexv2models_intent.this : k => v.intent_id }
-#     slots         = { for k, v in aws_lexv2models_slot.this : k => v.id }
-#     slot_types    = { for k, v in aws_lexv2models_slot_type.this : k => v.id }
-#     intent_updates = { for k, v in null_resource.update_intent : k => v.id }
-#     qna_intents   = { for k, v in null_resource.create_qna_intent : k => v.id }
-#   })), 0, 8)}"
-
-#   locale_specification = {
-#     "en_US" = {
-#       source_bot_version = "DRAFT"
-#     }
-#   }
-
-#   lifecycle {
-#     create_before_destroy = true
-#   }
-
-#   depends_on = [
-#     aws_lexv2models_bot_locale.this,
-#     aws_lexv2models_intent.this,
-#     aws_lexv2models_slot.this,
-#     null_resource.update_intent,
-#     null_resource.create_qna_intent
-#   ]
-# }
-
-
 
 # Lex V2 Slot Type
 resource "aws_lexv2models_slot_type" "this" {
@@ -926,72 +865,6 @@ resource "null_resource" "update_intent" {
 }
 
 
-# Null resource to create QnA Intents via AWS CLI 
-# resource "null_resource" "create_qna_intent" {
-#   for_each = var.knowledge_base_intent_enabled ? {
-#     for idx, intent in var.knowledge_base_intents : 
-#     "${intent.locale_id}.${intent.intent_name}" => intent
-#   } : {}
-
-#   triggers = {
-#     bot_id             = aws_lexv2models_bot.this.id
-#     knowledge_base_arn = each.value.knowledge_base_arn
-#     locale_id          = each.value.locale_id
-#     intent_name        = each.value.intent_name
-#     description        = each.value.description
-#     settings_hash      = sha1(jsonencode(each.value))
-#   }
-
-#   provisioner "local-exec" {
-#     command = <<-EOT
-#       aws lexv2-models create-intent \
-#         --bot-id ${aws_lexv2models_bot.this.id} \
-#         --bot-version DRAFT \
-#         --locale-id ${each.value.locale_id} \
-#         --intent-name ${each.value.intent_name} \
-#         --description "${each.value.description}" \
-#         --parent-intent-signature AMAZON.QnAIntent \
-#         ${lookup(each.value, "intent_closing_setting", null) != null ? "--intent-closing-setting '${jsonencode(each.value.intent_closing_setting)}'" : ""} \
-#         ${length(lookup(each.value, "sample_utterances", [])) > 0 ? "--sample-utterances '${jsonencode([for utterance in each.value.sample_utterances : { utterance = utterance }])}'" : ""} \
-#         --qn-a-intent-configuration '${jsonencode({
-#       dataSourceConfiguration = {
-#         bedrockKnowledgeStoreConfiguration = {
-#           bedrockKnowledgeBaseArn = each.value.knowledge_base_arn
-#         }
-#       }
-#       bedrockModelConfiguration = {
-#         modelArn = each.value.modelArn
-#       }
-#         })}'
-#     EOT
-#   }
-
-#   provisioner "local-exec" {
-#     when    = destroy
-#     command = <<-EOT
-#       INTENT_ID=$(aws lexv2-models list-intents \
-#         --bot-id ${self.triggers.bot_id} \
-#         --bot-version DRAFT \
-#         --locale-id ${self.triggers.locale_id} \
-#         --query "intentSummaries[?intentName=='${self.triggers.intent_name}'].intentId" \
-#         --output text)
-      
-#       if [ ! -z "$INTENT_ID" ]; then
-#         aws lexv2-models delete-intent \
-#           --bot-id ${self.triggers.bot_id} \
-#           --bot-version DRAFT \
-#           --locale-id ${self.triggers.locale_id} \
-#           --intent-id $INTENT_ID
-#       fi
-#     EOT
-#   }
-
-#   depends_on = [
-#     aws_lexv2models_bot_locale.this
-#   ]
-# }
-
-// ...existing code...
 
 resource "null_resource" "create_qna_intent" {
   for_each = var.knowledge_base_intent_enabled ? {
@@ -1240,7 +1113,6 @@ resource "null_resource" "bot_version" {
   ]
 }
 
-## For BOT ALIAS
 
 ## BOT ALIAS
 locals {
@@ -1306,12 +1178,8 @@ data "aws_region" "current" {}
 
 
 
-### Connect Integration
 
-
-
-
-## CONNECT INTEGRATION (with null_resource approach)
+## CONNECT INTEGRATION 
 resource "awscc_connect_integration_association" "this" {
   count = var.integrate_to_connect ? 1 : 0
 
