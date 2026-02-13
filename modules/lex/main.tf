@@ -77,20 +77,91 @@ resource "aws_lexv2models_intent" "this" {
 
   ##Inital Response
   dynamic "initial_response_setting" {
-    for_each = each.value.initial_response_setting != null ? [each.value.initial_response_setting] : []
-    content {
-      # Initial Response
-      dynamic "initial_response" {
-        for_each = initial_response_setting.value.initial_response != null ? [initial_response_setting.value.initial_response] : []
-        content {
-          allow_interrupt = initial_response.value.allow_interrupt
+  for_each = each.value.initial_response_setting != null ? [each.value.initial_response_setting] : []
+  content {
+    # Initial Response
+    dynamic "initial_response" {
+      for_each = initial_response_setting.value.initial_response != null ? [initial_response_setting.value.initial_response] : []
+      content {
+        allow_interrupt = initial_response.value.allow_interrupt
 
-          dynamic "message_group" {
-            for_each = initial_response.value.message_groups
-            content {
-              message {
-                plain_text_message {
-                  value = message_group.value.plain_text_message
+        dynamic "message_group" {
+          for_each = initial_response.value.message_groups
+          content {
+            message {
+              plain_text_message {
+                value = message_group.value.plain_text_message
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    # ADD THIS: Only define next_step if provided in tfvars
+    dynamic "next_step" {
+      for_each = try(initial_response_setting.value.next_step, null) != null ? [initial_response_setting.value.next_step] : []
+      content {
+        dynamic "dialog_action" {
+          for_each = [next_step.value.dialog_action]
+          content {
+            type           = dialog_action.value.type
+            slot_to_elicit = try(dialog_action.value.slot_to_elicit, null)
+          }
+        }
+        
+        dynamic "intent" {
+          for_each = try(next_step.value.intent, null) != null ? [next_step.value.intent] : []
+          content {
+            name = intent.value.name
+          }
+        }
+      }
+    }
+    
+    # ADD THIS: Only define code_hook if provided in tfvars
+    dynamic "code_hook" {
+      for_each = try(initial_response_setting.value.code_hook, null) != null ? [initial_response_setting.value.code_hook] : []
+      content {
+        active                      = code_hook.value.active
+        enable_code_hook_invocation = code_hook.value.enable_code_hook_invocation
+        
+        dynamic "post_code_hook_specification" {
+          for_each = try(code_hook.value.post_code_hook_specification, null) != null ? [code_hook.value.post_code_hook_specification] : []
+          content {
+            dynamic "success_next_step" {
+              for_each = try(post_code_hook_specification.value.success_next_step, null) != null ? [post_code_hook_specification.value.success_next_step] : []
+              content {
+                dynamic "dialog_action" {
+                  for_each = [success_next_step.value.dialog_action]
+                  content {
+                    type           = dialog_action.value.type
+                    slot_to_elicit = try(dialog_action.value.slot_to_elicit, null)
+                  }
+                }
+              }
+            }
+            
+            dynamic "failure_next_step" {
+              for_each = try(post_code_hook_specification.value.failure_next_step, null) != null ? [post_code_hook_specification.value.failure_next_step] : []
+              content {
+                dynamic "dialog_action" {
+                  for_each = [failure_next_step.value.dialog_action]
+                  content {
+                    type = dialog_action.value.type
+                  }
+                }
+              }
+            }
+            
+            dynamic "timeout_next_step" {
+              for_each = try(post_code_hook_specification.value.timeout_next_step, null) != null ? [post_code_hook_specification.value.timeout_next_step] : []
+              content {
+                dynamic "dialog_action" {
+                  for_each = [timeout_next_step.value.dialog_action]
+                  content {
+                    type = dialog_action.value.type
+                  }
                 }
               }
             }
@@ -99,6 +170,7 @@ resource "aws_lexv2models_intent" "this" {
       }
     }
   }
+}
 
   # Dialog Code Hook
   dynamic "dialog_code_hook" {
@@ -1150,7 +1222,8 @@ resource "null_resource" "bot_alias" {
         --description "${var.bot_alias_description}" \
         --bot-version ${var.bot_alias_version} \
         --region ${data.aws_region.current.name} \
-        ${var.enable_conversation_logs ? "--conversation-log-settings '${local.conversation_log_settings_json}'" : ""}
+        ${var.enable_conversation_logs ? "--conversation-log-settings '${local.conversation_log_settings_json}'" : ""} \
+        ${length(var.alias_tags) > 0 ? "--tags '${jsonencode(var.alias_tags)}'" : ""}
       echo "Bot alias '${var.bot_alias_name}' created successfully."
     EOT
   }

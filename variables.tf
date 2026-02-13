@@ -17,6 +17,7 @@ variable "lex_bots" {
     bot_alias_name             = optional(string)
     bot_alias_version          = optional(string)
     bot_alias_description      = optional(string)
+    alias_tags = optional(map(string))
     enable_conversation_logs = optional(bool, false)
     conversation_log_settings = optional(object({
       textLogSettings  = optional(list(object({

@@ -553,3 +553,8 @@ variable "conversation_log_settings" {
     audioLogSettings = []
   }
 }
+
+variable "alias_tags" {
+  description = "Tags to apply to the bot alias"
+  type        = map(string)
+}
