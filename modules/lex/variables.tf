@@ -364,16 +364,6 @@ variable "bot_slots" {
   }))
 }
 
-variable "bot_versions" {
-  type = list(object({
-    version_name = string
-    description  = optional(string)
-    locale_specification = map(object({
-      source_bot_version = string
-    }))
-  }))
-  description = "List of bot versions"
-}
 
 variable "locale_timeouts" {
   type = object({

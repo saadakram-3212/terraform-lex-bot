@@ -444,14 +444,6 @@ variable "lex_bots" {
       delete = optional(string)
       }))
 
-    # Bot Versions
-    bot_versions = optional(list(object({
-      version_name = string
-      description  = optional(string)
-      locale_specification = map(object({
-        source_bot_version = string
-      }))
-    })))
 
     knowledge_base_intent_enabled = optional(bool)
 

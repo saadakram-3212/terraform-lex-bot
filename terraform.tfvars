@@ -9,8 +9,8 @@ lex_bots = {
     bot_type                    = "Bot"
     knowledge_base_intent_enabled = false
     create_bot_alias = true
-    bot_alias_name = "simple-faq-bot-alias"
-    bot_alias_version = "1"
+    bot_alias_name = "simple-faq-bot-alias-3"
+    bot_alias_version = "3"
     bot_alias_description = "Alias for simple FAQ bot"
     integrate_to_connect = true
     alias_tags = {
@@ -108,7 +108,7 @@ lex_bots = {
     bot_intents = [
       # Intent 1: Greeting
       {
-        name        = "Greeting"
+        name        = "Greeting-3"
         bot_version = "DRAFT"
         locale_id   = "en_US"
         description = "Greeting intent"
@@ -128,12 +128,10 @@ lex_bots = {
             ]
           }
         }
-        dialog_code_hook = null
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-        confirmation_setting = null
         closing_setting = {
           active = true
           closing_response = {
@@ -145,10 +143,6 @@ lex_bots = {
             ]
           }
         }
-        input_contexts          = []
-        output_contexts         = []
-        kendra_configuration    = null
-        parent_intent_signature = null
       },
       {
         name        = "GreetingSpanish"
@@ -169,12 +163,10 @@ lex_bots = {
             ]
           }
         }
-        dialog_code_hook = null
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-        confirmation_setting = null
         closing_setting = {
           active = true
           closing_response = {
@@ -186,10 +178,6 @@ lex_bots = {
             ]
           }
         }
-        input_contexts          = []
-        output_contexts         = []
-        kendra_configuration    = null
-        parent_intent_signature = null
       },
       # Intent 2: AskQuestion
       {
@@ -213,12 +201,10 @@ lex_bots = {
             ]
           }
         }
-        dialog_code_hook = null
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-        confirmation_setting = null
         closing_setting = {
           active = true
           closing_response = {
@@ -230,10 +216,6 @@ lex_bots = {
             ]
           }
         }
-        input_contexts          = []
-        output_contexts         = []
-        kendra_configuration    = null
-        parent_intent_signature = null
       }
     ]
     # Intent timeouts
@@ -249,7 +231,8 @@ lex_bots = {
         locale_id    = "en_US"
         bot_version  = "DRAFT"
         description  = "Slot to capture the question topic"
-        slot_type_id = "AMAZON.AlphaNumeric"
+        slot_type_id = "AMAZON.AlphaNumeric" #Comment this out to use custom slot type reference by name
+        #slot_type_name = TopicType # Referencing custom slot type by name
         priority     = 1
         allow_multiple_values = false
         obfuscation_setting = {
@@ -267,32 +250,6 @@ lex_bots = {
               },
               {
                 plain_text_message = "Please tell me what topic your question is about."
-              }
-            ]
-            prompt_attempts_specification = [
-              {
-                allow_interrupt = true
-                map_block_key   = "Initial"
-                allowed_input_types = {
-                  allow_audio_input = true
-                  allow_dtmf_input  = false
-                }
-                audio_and_dtmf_input_specification = {
-                  start_timeout_ms = 4000
-                  audio_specification = {
-                    end_timeout_ms = 640
-                    max_length_ms  = 15000
-                  }
-                  dtmf_specification = {
-                    deletion_character = "*"
-                    end_character      = "#"
-                    end_timeout_ms     = 5000
-                    max_length         = 513
-                  }
-                }
-                text_input_specification = {
-                  start_timeout_ms = 30000
-                }
               }
             ]
           }
@@ -313,9 +270,7 @@ lex_bots = {
           slot_resolution_setting = {
             slot_resolution_strategy = "Default"
           }
-          wait_and_continue_specification = null
         }
-        sub_slot_setting = null
       }
     ]
     # Slot timeouts
@@ -331,7 +286,6 @@ lex_bots = {
         locale_id   = "en_US"
         bot_version = "DRAFT"
         description = "Custom slot type for question topics"
-        parent_slot_type_signature = null
         slot_type_values = [
           {
             sample_value = {
@@ -356,11 +310,7 @@ lex_bots = {
         ]
         value_selection_setting = {
           resolution_strategy          = "TopResolution"
-          advanced_recognition_setting = null
-          regex_filter                 = null
         }
-        composite_slot_type_setting = null
-        external_source_setting     = null
       }
     ]
     
@@ -370,17 +320,7 @@ lex_bots = {
       delete = "30m"
     }
    
-    bot_versions = [
-      {
-        version_name = "v1"
-        description  = "Initial version of the FAQ bot"
-        locale_specification = {
-          "en_US" = {
-            source_bot_version = "DRAFT"
-          }
-        }
-      }
-    ]
+
   },
 
   # Bot 2: Travel Bot
@@ -448,12 +388,10 @@ lex_bots = {
             ]
           }
         }
-        dialog_code_hook = null
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-        confirmation_setting = null
         closing_setting = {
           active = true
           closing_response = {
@@ -465,10 +403,6 @@ lex_bots = {
             ]
           }
         }
-        input_contexts          = []
-        output_contexts         = []
-        kendra_configuration    = null
-        parent_intent_signature = null
       },
       # Intent 2: VIP Customer
       {
@@ -493,12 +427,10 @@ lex_bots = {
             ]
           }
         }
-        dialog_code_hook = null
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-        confirmation_setting = null
         closing_setting = {
           active = true
           closing_response = {
@@ -510,10 +442,6 @@ lex_bots = {
             ]
           }
         }
-        input_contexts          = []
-        output_contexts         = []
-        kendra_configuration    = null
-        parent_intent_signature = null
       },
       # Intent 3: SpeaktoAgent
       {
@@ -538,12 +466,10 @@ lex_bots = {
             ]
           }
         }
-        dialog_code_hook = null
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-        confirmation_setting = null
         closing_setting = {
           active = true
           closing_response = {
@@ -555,10 +481,6 @@ lex_bots = {
             ]
           }
         }
-        input_contexts          = []
-        output_contexts         = []
-        kendra_configuration    = null
-        parent_intent_signature = null
       },
       # Intent 4: BookTickets
       {
@@ -583,7 +505,6 @@ lex_bots = {
             ]
           }
         }
-        dialog_code_hook = null
         fulfillment_code_hook = {
           enabled = false
           active  = false
@@ -602,9 +523,7 @@ lex_bots = {
                 plain_text_message = "Confirm your booking?"
               }
             ]
-            prompt_attempts_specification = []
           }
-          declination_response = null
         }
         closing_setting = {
           active = true
@@ -617,10 +536,6 @@ lex_bots = {
             ]
           }
         }
-        input_contexts          = []
-        output_contexts         = []
-        kendra_configuration    = null
-        parent_intent_signature = null
       },
       # Intent 5: GetDepartureLocations
       {
@@ -645,12 +560,10 @@ lex_bots = {
             ]
           }
         }
-        dialog_code_hook = null
         fulfillment_code_hook = {
           enabled = false
           active  = false
         }
-        confirmation_setting = null
         closing_setting = {
           active = true
           closing_response = {
@@ -662,10 +575,6 @@ lex_bots = {
             ]
           }
         }
-        input_contexts          = []
-        output_contexts         = []
-        kendra_configuration    = null
-        parent_intent_signature = null
       }
     ]
     
@@ -689,7 +598,6 @@ lex_bots = {
         obfuscation_setting = null
         value_elicitation_setting = {
           slot_constraint = "Required"
-          default_value_specification = null
           prompt_specification = {
             allow_interrupt            = true
             max_retries                = 2
@@ -702,7 +610,6 @@ lex_bots = {
                 plain_text_message = "Please tell me your destination city."
               }
             ]
-            prompt_attempts_specification = null
           }
           sample_utterances = [
             {
@@ -715,10 +622,7 @@ lex_bots = {
               utterance = "Tokyo"
             }
           ]
-          slot_resolution_setting         = null
-          wait_and_continue_specification = null
         }
-        sub_slot_setting = null
       },
       
       {
@@ -730,10 +634,8 @@ lex_bots = {
         slot_type_id = "AMAZON.Date"
         priority     = 2
         allow_multiple_values = false
-        obfuscation_setting = null
         value_elicitation_setting = {
           slot_constraint = "Required"
-          default_value_specification = null
           prompt_specification = {
             allow_interrupt            = true
             max_retries                = 2
@@ -746,13 +648,8 @@ lex_bots = {
                 plain_text_message = "Please provide your travel date."
               }
             ]
-            prompt_attempts_specification = null
           }
-          sample_utterances               = null
-          slot_resolution_setting         = null
-          wait_and_continue_specification = null
         }
-        sub_slot_setting = null
       },
       
       {
@@ -764,10 +661,8 @@ lex_bots = {
         slot_type_name = "TravelClass" # Referencing custom slot type by name
         priority     = 1
         allow_multiple_values = false
-        obfuscation_setting = null
         value_elicitation_setting = {
           slot_constraint = "Optional"
-          default_value_specification = null
           prompt_specification = {
             allow_interrupt            = true
             max_retries                = 1
@@ -777,13 +672,8 @@ lex_bots = {
                 plain_text_message = "Which city are you departing from? (optional)"
               }
             ]
-            prompt_attempts_specification = null
           }
-          sample_utterances               = null
-          slot_resolution_setting         = null
-          wait_and_continue_specification = null
         }
-        sub_slot_setting = null
       }
     ]
     
@@ -799,7 +689,6 @@ lex_bots = {
         locale_id   = "en_US"
         bot_version = "DRAFT"
         description = "Travel class options"
-        parent_slot_type_signature = null
         slot_type_values = [
           {
             sample_value = {
@@ -834,11 +723,7 @@ lex_bots = {
         ]
         value_selection_setting = {
           resolution_strategy          = "TopResolution"
-          advanced_recognition_setting = null
-          regex_filter                 = null
         }
-        composite_slot_type_setting = null
-        external_source_setting     = null
       }
     ]
     
@@ -848,16 +733,5 @@ lex_bots = {
       delete = "30m"
     }
     
-    bot_versions = [
-      {
-        version_name = "v1"
-        description  = "Initial version of travel bot"
-        locale_specification = {
-          "en_US" = {
-            source_bot_version = "DRAFT"
-          }
-        }
-      }
-    ]
   }
 }

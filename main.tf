@@ -37,8 +37,6 @@ module "lex_bot" {
     BotName = each.value.bot_name
   })
 
-  bot_versions = each.value.bot_versions
-
   # Intents
   bot_intents     = each.value.bot_intents
   intent_timeouts = each.value.intent_timeouts
