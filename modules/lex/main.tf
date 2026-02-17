@@ -1228,20 +1228,6 @@ resource "null_resource" "bot_alias" {
     EOT
   }
   
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      echo "Deleting bot alias '${self.triggers.alias_name}'..."
-      aws lexv2-models delete-bot-alias \
-        --bot-id ${self.triggers.bot_id} \
-        --bot-alias-id $(aws lexv2-models list-bot-aliases \
-          --bot-id ${self.triggers.bot_id} \
-          --query "botAliasSummaries[?botAliasName=='${self.triggers.alias_name}'].botAliasId" \
-          --output text)
-      echo "Bot alias deleted successfully."
-    EOT
-  }
-  
   depends_on = [
     null_resource.bot_version
   ]
