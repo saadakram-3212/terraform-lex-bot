@@ -173,6 +173,7 @@ variable "bot_slots" {
     description  = optional(string)
     slot_type_id = optional(string)
     priority     = optional(number)
+    slot_type_name = optional(string) # For referencing slot type by name instead of ID
     # Multiple values setting
     allow_multiple_values = optional(bool)
 

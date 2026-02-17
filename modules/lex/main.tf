@@ -379,8 +379,7 @@ resource "aws_lexv2models_slot" "this" {
   name        = each.value.name
 
   description  = each.value.description
-  slot_type_id = each.value.slot_type_id
-
+  slot_type_id = each.value.slot_type_name != null ? aws_lexv2models_slot_type.this["${each.value.locale_id}.${each.value.slot_type_name}"].slot_type_id : each.value.slot_type_id
   # Multiple values setting
   dynamic "multiple_values_setting" {
     for_each = each.value.allow_multiple_values ? [1] : []
@@ -726,8 +725,8 @@ resource "aws_lexv2models_slot" "this" {
 
   depends_on = [
     aws_lexv2models_bot_locale.this,
-    aws_lexv2models_intent.this
-  ]
+    aws_lexv2models_intent.this,
+    aws_lexv2models_slot_type.this]
 }
 
 # Lex V2 Slot Type
