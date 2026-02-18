@@ -20,7 +20,7 @@ module "lex_bot" {
   enable_conversation_logs = each.value.enable_conversation_logs
   conversation_log_settings = each.value.conversation_log_settings
   alias_tags = each.value.alias_tags
-  
+  bot_alias_locale_settings = each.value.bot_alias_locale_settings
 
   # Connect Integration
   integrate_to_connect = each.value.integrate_to_connect

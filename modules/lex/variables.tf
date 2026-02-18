@@ -549,3 +549,26 @@ variable "alias_tags" {
   description = "Tags to apply to the bot alias"
   type        = map(string)
 }
+
+
+# variables.tf
+variable "bot_alias_locale_settings" {
+  description = <<-EOT
+    Map of locale-specific settings for the bot alias, including Lambda functions.
+    Key is the locale ID (e.g. "en_US"), value is the locale configuration.
+    Example:
+    {
+      "en_US" = {
+        enabled = true
+        lambda_arn                 = "arn:aws:lambda:us-east-1:123456789012:function:my-function"
+        code_hook_interface_version = "1"
+      }
+    }
+  EOT
+  type = map(object({
+    enabled                     = bool
+    lambda_arn                  = optional(string, null)
+    code_hook_interface_version = optional(string, "1")
+  }))
+  default = {}
+}

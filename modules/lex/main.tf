@@ -1198,11 +1198,27 @@ locals {
       } : {}
     )
   ) : ""
+
+  bot_alias_locale_settings_json = jsonencode({
+    for locale_id, settings in var.bot_alias_locale_settings : locale_id => merge(
+      { enabled = settings.enabled },
+      # Only include codeHookSpecification if a Lambda ARN was provided
+      settings.lambda_arn != null ? {
+        codeHookSpecification = {
+          lambdaCodeHook = {
+            lambdaARN                = settings.lambda_arn
+            codeHookInterfaceVersion = settings.code_hook_interface_version
+          }
+        }
+      } : {}
+    )
+  })
+
 }
 
 resource "null_resource" "bot_alias" {
   count = var.create_bot_alias ? 1 : 0
-  
+
   triggers = {
     bot_id                    = aws_lexv2models_bot.this.id
     alias_name                = var.bot_alias_name
@@ -1210,9 +1226,9 @@ resource "null_resource" "bot_alias" {
     description               = var.bot_alias_description
     conversation_logs_enabled = var.enable_conversation_logs
     conversation_logs_config  = local.conversation_log_settings_json
-    #tags                      = jsonencode(var.alias_tags)
+    bot_alias_locale_settings = local.bot_alias_locale_settings_json
   }
-  
+
   provisioner "local-exec" {
     command = <<-EOT
       echo "Creating bot alias '${var.bot_alias_name}' for bot ${aws_lexv2models_bot.this.id} pointing to version ${var.bot_alias_version}..."
@@ -1223,11 +1239,12 @@ resource "null_resource" "bot_alias" {
         --bot-version ${var.bot_alias_version} \
         --region ${data.aws_region.current.name} \
         ${var.enable_conversation_logs ? "--conversation-log-settings '${local.conversation_log_settings_json}'" : ""} \
-        ${length(var.alias_tags) > 0 ? "--tags '${jsonencode(var.alias_tags)}'" : ""}
+        ${length(var.alias_tags) > 0 ? "--tags '${jsonencode(var.alias_tags)}'" : ""} \
+        ${length(var.bot_alias_locale_settings) > 0 ? "--bot-alias-locale-settings '${local.bot_alias_locale_settings_json}'" : ""}
       echo "Bot alias '${var.bot_alias_name}' created successfully."
     EOT
   }
-  
+
   depends_on = [
     null_resource.bot_version
   ]

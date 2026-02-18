@@ -10,7 +10,7 @@ lex_bots = {
     knowledge_base_intent_enabled = false
     create_bot_alias = true
     bot_alias_name = "simple-faq-bot-alias-3"
-    bot_alias_version = "3"
+    bot_alias_version = "1"
     bot_alias_description = "Alias for simple FAQ bot"
     integrate_to_connect = true
     alias_tags = {
@@ -33,6 +33,13 @@ lex_bots = {
       }
     ]
     audioLogSettings = [] ## This has to be kept as empty array if not used, otherwise it throws an error. Cannot be null or undefined.
+    }
+    bot_alias_locale_settings = {
+      "en_US" = {
+        enabled                     = true
+        lambda_arn                  = "arn:aws:lambda:us-east-1:387867038403:function:lex-bot-test-lambda-for-alias"
+        code_hook_interface_version = "1.0"
+      }
     }
     knowledge_base_intents = [
 {
@@ -310,6 +317,78 @@ lex_bots = {
         ]
         value_selection_setting = {
           resolution_strategy          = "TopResolution"
+        }
+      },
+      {
+        name        = "otherLanguageSlotType"
+        locale_id   = "en_US"
+        bot_version = "DRAFT"
+        description = ""
+        slot_type_values = [
+          {
+            sample_value = {
+              value = "English"
+            }
+          },
+          {
+            sample_value = {
+              value = "Spanish"
+            }
+          },
+          {
+            sample_value = {
+              value = "French"
+            }
+          },
+          {
+            sample_value = {
+              value = "German"
+            }
+          },
+          {
+            sample_value = {
+              value = "Chinese"
+            }
+          }
+        ]
+        value_selection_setting = {
+          resolution_strategy          = "OriginalValue"
+        }
+      },
+      {
+        name        = "otherLanguageSlotType"
+        locale_id   = "es_ES"
+        bot_version = "DRAFT"
+        description = ""
+        slot_type_values = [
+          {
+            sample_value = {
+              value = "English"
+            }
+          },
+          {
+            sample_value = {
+              value = "Spanish"
+            }
+          },
+          {
+            sample_value = {
+              value = "French"
+            }
+          },
+          {
+            sample_value = {
+              value = "German"
+            }
+          },
+          {
+            sample_value = {
+              value = "Chinese"
+            }
+          }
+        ]
+        value_selection_setting = {
+          resolution_strategy          = "OriginalValue"
         }
       }
     ]

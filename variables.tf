@@ -42,6 +42,11 @@ variable "lex_bots" {
         selectiveLoggingEnabled = optional(bool)
       })))
     }), null)
+    bot_alias_locale_settings = optional(map(object({
+    enabled                     = bool
+    lambda_arn                  = optional(string, null)
+    code_hook_interface_version = optional(string, "1")
+    })), {})
 
     # Connect integration
     integrate_to_connect = bool
