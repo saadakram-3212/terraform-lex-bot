@@ -1206,7 +1206,7 @@ locals {
       settings.lambda_arn != null ? {
         codeHookSpecification = {
           lambdaCodeHook = {
-            lambdaARN                = settings.lambda_arn
+            lambdaARN                = var.lambda_arn_for_alias
             codeHookInterfaceVersion = settings.code_hook_interface_version
           }
         }

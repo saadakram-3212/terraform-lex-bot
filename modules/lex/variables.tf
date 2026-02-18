@@ -551,7 +551,6 @@ variable "alias_tags" {
 }
 
 
-# variables.tf
 variable "bot_alias_locale_settings" {
   description = <<-EOT
     Map of locale-specific settings for the bot alias, including Lambda functions.
@@ -571,4 +570,9 @@ variable "bot_alias_locale_settings" {
     code_hook_interface_version = optional(string, "1")
   }))
   default = {}
+}
+
+variable "lambda_arn_for_alias" {
+  description = "ARN of the Lambda function for the bot alias"
+  type        = string
 }

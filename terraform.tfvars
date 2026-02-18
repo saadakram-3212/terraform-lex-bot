@@ -39,6 +39,11 @@ lex_bots = {
         enabled                     = true
         lambda_arn                  = "arn:aws:lambda:us-east-1:387867038403:function:lex-bot-test-lambda-for-alias"
         code_hook_interface_version = "1.0"
+      },
+      "es_ES" = {
+        enabled                     = true
+        lambda_arn                  = "arn:aws:lambda:us-east-1:387867038403:function:lex-bot-test-lambda-for-alias"
+        code_hook_interface_version = "1.0"
       }
     }
     knowledge_base_intents = [

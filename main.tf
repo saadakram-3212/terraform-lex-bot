@@ -21,6 +21,7 @@ module "lex_bot" {
   conversation_log_settings = each.value.conversation_log_settings
   alias_tags = each.value.alias_tags
   bot_alias_locale_settings = each.value.bot_alias_locale_settings
+  lambda_arn_for_alias = "arn:aws:lambda:us-east-1:387867038403:function:lex-bot-test-lambda-for-alias"
 
   # Connect Integration
   integrate_to_connect = each.value.integrate_to_connect
