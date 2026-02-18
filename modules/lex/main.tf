@@ -1231,17 +1231,39 @@ resource "null_resource" "bot_alias" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      echo "Creating bot alias '${var.bot_alias_name}' for bot ${aws_lexv2models_bot.this.id} pointing to version ${var.bot_alias_version}..."
-      aws lexv2-models create-bot-alias \
+      echo "Checking if bot alias '${var.bot_alias_name}' already exists for bot ${aws_lexv2models_bot.this.id}..."
+
+      EXISTING_ALIAS_ID=$(aws lexv2-models list-bot-aliases \
         --bot-id ${aws_lexv2models_bot.this.id} \
-        --bot-alias-name ${var.bot_alias_name} \
-        --description "${var.bot_alias_description}" \
-        --bot-version ${var.bot_alias_version} \
         --region ${data.aws_region.current.name} \
-        ${var.enable_conversation_logs ? "--conversation-log-settings '${local.conversation_log_settings_json}'" : ""} \
-        ${length(var.alias_tags) > 0 ? "--tags '${jsonencode(var.alias_tags)}'" : ""} \
-        ${length(var.bot_alias_locale_settings) > 0 ? "--bot-alias-locale-settings '${local.bot_alias_locale_settings_json}'" : ""}
-      echo "Bot alias '${var.bot_alias_name}' created successfully."
+        --query "botAliasSummaries[?botAliasName=='${var.bot_alias_name}'].botAliasId | [0]" \
+        --output text)
+
+      if [ "$EXISTING_ALIAS_ID" != "None" ] && [ -n "$EXISTING_ALIAS_ID" ]; then
+        echo "Bot alias '${var.bot_alias_name}' already exists with ID $EXISTING_ALIAS_ID. Updating..."
+        aws lexv2-models update-bot-alias \
+          --bot-id ${aws_lexv2models_bot.this.id} \
+          --bot-alias-id $EXISTING_ALIAS_ID \
+          --bot-alias-name ${var.bot_alias_name} \
+          --description "${var.bot_alias_description}" \
+          --bot-version ${var.bot_alias_version} \
+          --region ${data.aws_region.current.name} \
+          ${var.enable_conversation_logs ? "--conversation-log-settings '${local.conversation_log_settings_json}'" : ""} \
+          ${length(var.bot_alias_locale_settings) > 0 ? "--bot-alias-locale-settings '${local.bot_alias_locale_settings_json}'" : ""}
+        echo "Bot alias '${var.bot_alias_name}' updated successfully."
+      else
+        echo "Creating bot alias '${var.bot_alias_name}' for bot ${aws_lexv2models_bot.this.id} pointing to version ${var.bot_alias_version}..."
+        aws lexv2-models create-bot-alias \
+          --bot-id ${aws_lexv2models_bot.this.id} \
+          --bot-alias-name ${var.bot_alias_name} \
+          --description "${var.bot_alias_description}" \
+          --bot-version ${var.bot_alias_version} \
+          --region ${data.aws_region.current.name} \
+          ${var.enable_conversation_logs ? "--conversation-log-settings '${local.conversation_log_settings_json}'" : ""} \
+          ${length(var.alias_tags) > 0 ? "--tags '${jsonencode(var.alias_tags)}'" : ""} \
+          ${length(var.bot_alias_locale_settings) > 0 ? "--bot-alias-locale-settings '${local.bot_alias_locale_settings_json}'" : ""}
+        echo "Bot alias '${var.bot_alias_name}' created successfully."
+      fi
     EOT
   }
 
